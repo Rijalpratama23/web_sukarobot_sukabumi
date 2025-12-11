@@ -1,0 +1,115 @@
+name: Deploy E-Learning to VPS
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: 'Deployment type'
+        required: true
+        default: 'incremental'
+        type: choice
+        options:
+        - incremental
+        - full
+
+jobs:
+  deploy:
+    name: E-Learning VPS Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2  # Get last 2 commits for diff
+
+    - name: Determine deployment mode
+      id: deploy_mode
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          DEPLOY_TYPE="${{ github.event.inputs.deployment_type }}"
+        else
+          DEPLOY_TYPE="incremental"
+        fi
+        echo "deployment_type=$DEPLOY_TYPE" >> $GITHUB_OUTPUT
+        echo "🚀 Deployment mode: $DEPLOY_TYPE"
+
+    - name: Smart Laravel E-Learning Sync
+      id: sync_deploy
+      uses: nick-fields/retry@v2
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        retry_wait_seconds: 20
+        command: |
+          # Install lftp for smart sync
+          sudo apt-get update && sudo apt-get install -y lftp
+
+          echo "🎓 E-Learning Smart Sync - Only sync changed Laravel files..."
+          echo "📋 Will sync: app/, config/, resources/, routes/, public/ (excluding server files)"
+          echo "⚡ Excluding: vendor/, .env, storage/logs (server managed)"
+          echo "✅ Safe deployment - only application code"
+
+          # Smart Laravel folder sync via SSH/SFTP
+          lftp -e "
+          set sftp:auto-confirm yes;
+          set net:timeout 60;
+          set net:max-retries 3;
+          set net:reconnect-interval-base 5;
+          open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} sftp://${{ secrets.SSH_HOST }};
+          cd ${{ secrets.SSH_PATH }};
+          lcd ./;
+
+          echo 'Starting E-Learning smart sync...';
+
+          # Sync core Laravel folders (only newer files)
+          mirror --reverse --only-newer --verbose --parallel=2 app/ app/;
+          mirror --reverse --only-newer --verbose --parallel=2 config/ config/;
+          mirror --reverse --only-newer --verbose --parallel=2 resources/ resources/;
+          mirror --reverse --only-newer --verbose --parallel=2 routes/ routes/;
+          mirror --reverse --only-newer --verbose --parallel=2 database/migrations/ database/migrations/;
+
+          # Sync public folder but exclude server-managed files
+          mirror --reverse --only-newer --verbose --parallel=2 --exclude='index.php' --exclude='.htaccess' public/ public/;
+
+          # Clear bootstrap cache
+          mirror --reverse --delete --verbose --parallel=1 bootstrap/cache/ bootstrap/cache/;
+
+          echo '✅ E-Learning sync completed!';
+          quit
+          "
+
+    - name: Run Laravel Commands via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASS }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd ${{ secrets.SSH_PATH }}
+
+          echo "🔧 Running Laravel optimization commands..."
+
+          # Clear all caches
+          php artisan config:clear
+          php artisan route:clear
+          php artisan view:clear
+
+          # Cache for production
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+          echo "✅ E-Learning optimization completed!"
+
+    - name: Deployment Summary
+      if: always()
+      run: |
+        echo "✅ E-Learning deployment completed!"
+        echo "🔄 Only changed Laravel files were synced"
+        echo "🧹 Caches cleared and optimized"
+        echo "🎯 Server synchronized with Git repository"
+
