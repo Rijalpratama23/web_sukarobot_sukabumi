@@ -65,12 +65,16 @@ jobs:
 
           # Use selective folder sync instead of full mirror
           lftp -e "
-          set sftp:auto-confirm yes;
-          set net:timeout 60;
-          set net:max-retries 3;
+          set ftp:ssl-allow no;
+          set ftp:passive-mode on;
+          set net:timeout 30;
+          set net:max-retries 2;
           set net:reconnect-interval-base 5;
-          # Using open -u for safer password handling with special characters
-          open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} sftp://${{ secrets.SSH_HOST }};
+          
+          # Using open -u to handle special characters in password safely
+          # Switching to FTP as SFTP seems to be timing out
+          open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} ftp://${{ secrets.SSH_HOST }};
+          
           cd ${{ secrets.SSH_PATH }};
           lcd ./;
 
@@ -87,7 +91,7 @@ jobs:
           echo 'Syncing bootstrap/cache with delete to clear old cache...';
           mirror --reverse --delete --verbose --parallel=1 bootstrap/cache/ bootstrap/cache/;
 
-          echo "✅ Laravel cleared old cache files completed!";
+          echo '✅ Laravel cleared old cache files completed!';
 
           # Sync public folder but exclude index.php and .htaccess
           mirror --reverse --only-newer --verbose --parallel=2 --exclude='index.php' --exclude='.htaccess' public/ public/;
