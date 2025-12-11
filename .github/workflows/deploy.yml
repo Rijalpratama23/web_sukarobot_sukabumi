@@ -75,10 +75,16 @@ jobs:
           # Switching to FTP as SFTP seems to be timing out
           open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} ftp://${{ secrets.SSH_HOST }};
           
-          cd ${{ secrets.SSH_PATH }};
+          # Use relative path 'public_html' instead of absolute path
+          # This is safer for cPanel main accounts
+          cd public_html;
           lcd ./;
 
           echo 'Starting selective Laravel folder sync...';
+          
+          # Delete default index.html if exists so it doesn't block Laravel
+          echo 'Removing old index.html...';
+          rm -f index.html;
 
           # Sync only important Laravel folders
           mirror --reverse --only-newer --verbose --parallel=2 app/ app/;
