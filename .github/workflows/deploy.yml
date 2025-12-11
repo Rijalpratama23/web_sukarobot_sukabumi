@@ -46,24 +46,23 @@ jobs:
         echo "deployment_type=$DEPLOY_TYPE" >> $GITHUB_OUTPUT
         echo "🚀 Deployment mode: $DEPLOY_TYPE"
 
-    - name: Smart Server Sync
+    # Skip build steps - just sync files directly
+
+    - name: Full Deploy (Wipe & Upload)
       id: sync_deploy
-      # Removed 'if' to ensure it runs for all modes, or you can restore it if you have separate steps for full deploy
       uses: nick-fields/retry@v2
       with:
-        timeout_minutes: 10
-        max_attempts: 3
+        timeout_minutes: 30
+        max_attempts: 2
         retry_wait_seconds: 20
         command: |
           # Install lftp
           sudo apt-get update && sudo apt-get install -y lftp
 
-          echo "🔍 Laravel Core Sync - Only sync important Laravel folders..."
-          echo "📋 Will sync: app/, bootstrap/, config/, public/, resources/, routes/"
-          echo "⚡ Excluding: vendor/, .htaccess, index.php (server files)"
-          echo "✅ Safe deployment - only application code"
+          echo "🚀 Starting Full Deployment..."
+          echo "📋 This will sync EVERYTHING to public_html"
+          echo "⚡ Excluding: vendor/ (preserved on server), .env, .git"
 
-          # Use selective folder sync instead of full mirror
           lftp -e "
           set ftp:ssl-allow no;
           set ftp:passive-mode on;
@@ -71,42 +70,21 @@ jobs:
           set net:max-retries 2;
           set net:reconnect-interval-base 5;
           
-          # Using open -u to handle special characters in password safely
-          # Switching to FTP as SFTP seems to be timing out
           open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} ftp://${{ secrets.SSH_HOST }};
           
-          # Use relative path 'public_html' instead of absolute path
-          # This is safer for cPanel main accounts
+          # Navigate to public_html
           cd public_html;
-          lcd ./;
-
-          echo 'Starting selective Laravel folder sync...';
           
-          # Delete default index.html if exists so it doesn't block Laravel
-          echo 'Removing old index.html...';
-          rm -f index.html;
-
-          # Sync only important Laravel folders
-          mirror --reverse --only-newer --verbose --parallel=2 app/ app/;
-          mirror --reverse --only-newer --verbose --parallel=2 bootstrap/ bootstrap/;
-          mirror --reverse --only-newer --verbose --parallel=2 config/ config/;
-          mirror --reverse --only-newer --verbose --parallel=2 resources/ resources/;
-          mirror --reverse --only-newer --verbose --parallel=2 routes/ routes/;
-
-          # Sync bootstrap/cache with delete to clear cache files
-          echo 'Syncing bootstrap/cache with delete to clear old cache...';
-          mirror --reverse --delete --verbose --parallel=1 bootstrap/cache/ bootstrap/cache/;
-
-          echo '✅ Laravel cleared old cache files completed!';
-
-          # Sync public folder but exclude index.php and .htaccess
-          mirror --reverse --only-newer --verbose --parallel=2 --exclude='index.php' --exclude='.htaccess' public/ public/;
-
+          echo 'Syncing project (excluding vendor)...';
+          
+          # Full Mirror Sync
+          # --delete: Delete remote files not in local
+          # --exclude vendor/: Do NOT delete remote vendor/ and do NOT upload local vendor/
+          mirror --reverse --delete --verbose --parallel=2 --exclude .git/ --exclude .env --exclude node_modules/ --exclude vendor/ ./ ./;
+          
+          echo '✅ Full deployment completed!';
           quit
           "
-
-          echo "✅ Laravel core sync completed!"
-          echo "🧹 Bootstrap cache cleared - server cache matches local cache"
 
     - name: Deployment Summary
       if: always()
