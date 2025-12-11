@@ -1,8 +1,9 @@
-name: Deploy E-Learning to VPS
+name: Deploy to CPanel
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       deployment_type:
@@ -13,16 +14,25 @@ on:
         options:
         - incremental
         - full
+        - force_all_php
+      force_upload:
+        description: 'Force upload all PHP files (if auto-detection fails)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+        - 'false'
+        - 'true'
 
 jobs:
-  deploy:
-    name: E-Learning VPS Deploy
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 2  # Get last 2 commits for diff
+    # Skip build steps - just sync files directly
 
     - name: Determine deployment mode
       id: deploy_mode
@@ -32,84 +42,70 @@ jobs:
         else
           DEPLOY_TYPE="incremental"
         fi
+
         echo "deployment_type=$DEPLOY_TYPE" >> $GITHUB_OUTPUT
         echo "🚀 Deployment mode: $DEPLOY_TYPE"
 
-    - name: Smart Laravel E-Learning Sync
+    - name: Smart Server Sync
       id: sync_deploy
+      # Removed 'if' to ensure it runs for all modes, or you can restore it if you have separate steps for full deploy
       uses: nick-fields/retry@v2
       with:
         timeout_minutes: 10
         max_attempts: 3
         retry_wait_seconds: 20
         command: |
-          # Install lftp for smart sync
+          # Install lftp
           sudo apt-get update && sudo apt-get install -y lftp
 
-          echo "🎓 E-Learning Smart Sync - Only sync changed Laravel files..."
-          echo "📋 Will sync: app/, config/, resources/, routes/, public/ (excluding server files)"
-          echo "⚡ Excluding: vendor/, .env, storage/logs (server managed)"
+          echo "🔍 Laravel Core Sync - Only sync important Laravel folders..."
+          echo "📋 Will sync: app/, bootstrap/, config/, public/, resources/, routes/"
+          echo "⚡ Excluding: vendor/, .htaccess, index.php (server files)"
           echo "✅ Safe deployment - only application code"
 
-          # Smart Laravel folder sync via SSH/SFTP
+          # Use selective folder sync instead of full mirror
           lftp -e "
           set sftp:auto-confirm yes;
           set net:timeout 60;
           set net:max-retries 3;
           set net:reconnect-interval-base 5;
+          # Using open -u for safer password handling with special characters
           open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} sftp://${{ secrets.SSH_HOST }};
           cd ${{ secrets.SSH_PATH }};
           lcd ./;
 
-          echo 'Starting E-Learning smart sync...';
+          echo 'Starting selective Laravel folder sync...';
 
-          # Sync core Laravel folders (only newer files)
+          # Sync only important Laravel folders
           mirror --reverse --only-newer --verbose --parallel=2 app/ app/;
+          mirror --reverse --only-newer --verbose --parallel=2 bootstrap/ bootstrap/;
           mirror --reverse --only-newer --verbose --parallel=2 config/ config/;
           mirror --reverse --only-newer --verbose --parallel=2 resources/ resources/;
           mirror --reverse --only-newer --verbose --parallel=2 routes/ routes/;
-          mirror --reverse --only-newer --verbose --parallel=2 database/migrations/ database/migrations/;
 
-          # Sync public folder but exclude server-managed files
-          mirror --reverse --only-newer --verbose --parallel=2 --exclude='index.php' --exclude='.htaccess' public/ public/;
-
-          # Clear bootstrap cache
+          # Sync bootstrap/cache with delete to clear cache files
+          echo 'Syncing bootstrap/cache with delete to clear old cache...';
           mirror --reverse --delete --verbose --parallel=1 bootstrap/cache/ bootstrap/cache/;
 
-          echo '✅ E-Learning sync completed!';
+          echo "✅ Laravel cleared old cache files completed!";
+
+          # Sync public folder but exclude index.php and .htaccess
+          mirror --reverse --only-newer --verbose --parallel=2 --exclude='index.php' --exclude='.htaccess' public/ public/;
+
           quit
           "
 
-    - name: Run Laravel Commands via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.SSH_PASS }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd ${{ secrets.SSH_PATH }}
-
-          echo "🔧 Running Laravel optimization commands..."
-
-          # Clear all caches
-          php artisan config:clear
-          php artisan route:clear
-          php artisan view:clear
-
-          # Cache for production
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-
-          echo "✅ E-Learning optimization completed!"
+          echo "✅ Laravel core sync completed!"
+          echo "🧹 Bootstrap cache cleared - server cache matches local cache"
 
     - name: Deployment Summary
       if: always()
       run: |
-        echo "✅ E-Learning deployment completed!"
-        echo "🔄 Only changed Laravel files were synced"
-        echo "🧹 Caches cleared and optimized"
-        echo "🎯 Server synchronized with Git repository"
-
+        if [ "${{ steps.deploy_mode.outputs.deployment_type }}" = "full" ]; then
+          echo "✅ Full deployment completed!"
+          echo "🔄 Future pushes will only deploy changed files."
+        else
+          echo "✅ Selective deployment completed!"
+          echo "⚡ Only changed files were processed - no unnecessary transfers!"
+        fi
+        echo "🎯 Server synchronized with Git repository."
