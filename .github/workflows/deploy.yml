@@ -60,8 +60,8 @@ jobs:
           sudo apt-get update && sudo apt-get install -y lftp
 
           echo "🚀 Starting Full Deployment..."
-          echo "📋 Deploying to: ${{ secrets.SSH_PATH }}"
-          echo "⚡ Excluding: vendor/, .env, .git, sub_domain/"
+          echo "📋 Deploying to: public_html"
+          echo "⚡ Excluding: vendor/, .env, .git, sub_domain/ + system files"
 
           lftp -e "
           set ftp:ssl-allow no;
@@ -72,17 +72,61 @@ jobs:
           
           open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} ftp://${{ secrets.SSH_HOST }};
           
-          # Navigate to deployment path
-          cd ${{ secrets.SSH_PATH }};
+          # Navigate to public_html (EXPLICIT path)
+          cd public_html;
           
-          echo 'Syncing project (excluding vendor, sub_domain)...';
+          echo 'Syncing project (excluding vendor, sub_domain, system files)...';
           
-          # Full Mirror Sync
+          # Full Mirror Sync with COMPREHENSIVE excludes
           # --delete: Delete remote files not in local (keeps server in sync with Git)
-          # --exclude vendor/: Do NOT delete remote vendor/ and do NOT upload local vendor/ (manual upload)
-          # --exclude .env: Do NOT delete remote .env (manual upload)
-          # --exclude sub_domain/: Do NOT touch sub_domain folder on server (protected)
-          mirror --reverse --delete --verbose --parallel=2 --exclude .git/ --exclude .env --exclude node_modules/ --exclude vendor/ --exclude sub_domain/ ./ ./;
+          # 
+          # PROJECT excludes:
+          # --exclude vendor/: Manual upload
+          # --exclude .env: Manual upload  
+          # --exclude sub_domain/: Protected subfolder
+          #
+          # SYSTEM excludes (prevent deletion of server config):
+          # --exclude-glob .bash*: Shell configs
+          # --exclude-glob .cpanel*/: cPanel configs
+          # --exclude-glob .ssh/: SSH keys
+          # --exclude bin/: Server binaries
+          # --exclude etc/: Server configs
+          # --exclude logs/: Server logs
+          mirror --reverse --delete --verbose --parallel=2 \
+            --exclude .git/ \
+            --exclude .gitignore \
+            --exclude .env \
+            --exclude node_modules/ \
+            --exclude vendor/ \
+            --exclude sub_domain/ \
+            --exclude-glob .bash* \
+            --exclude-glob .cagefs* \
+            --exclude-glob .caldav* \
+            --exclude-glob .cl.selector* \
+            --exclude-glob .clwpos* \
+            --exclude-glob .cpanel* \
+            --exclude-glob .cphorde* \
+            --exclude-glob .ftpquota* \
+            --exclude-glob .htpasswds* \
+            --exclude-glob .imunify* \
+            --exclude-glob .koality* \
+            --exclude-glob .lastlogin* \
+            --exclude-glob .myimunify* \
+            --exclude-glob .pearrc* \
+            --exclude-glob .putty* \
+            --exclude-glob .razor* \
+            --exclude-glob .softaculous* \
+            --exclude-glob .spamassassin* \
+            --exclude-glob .ssh* \
+            --exclude-glob .subaccounts* \
+            --exclude-glob .trash* \
+            --exclude bin/ \
+            --exclude data/ \
+            --exclude etc/ \
+            --exclude logs/ \
+            --exclude lscmData/ \
+            --exclude php/ \
+            ./ ./;
           
           echo '✅ Full deployment completed!';
           quit
