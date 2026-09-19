@@ -9,79 +9,66 @@ use Illuminate\Support\Facades\DB;
 class QuizController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get current instructor/trainer ID
      */
-    public function index()
+    private function getTrainerId()
     {
-        // Get current instructor/trainer ID
-        $trainerId = null;
-        
         if (auth()->check()) {
             $user = auth()->user();
             $trainer = DB::table('data_trainers')
                 ->where('email', $user->email)
                 ->first();
-            
+
             if ($trainer) {
-                $trainerId = $trainer->id;
+                return $trainer->id;
             }
         }
-        
-        if (!$trainerId) {
-            $trainer = DB::table('data_trainers')
-                ->where('status_trainer', 'Aktif')
-                ->first();
-            $trainerId = $trainer ? $trainer->id : null;
-        }
+
+        return null;
+    }
+
+    /**
+     * Display a listing of the resource.
+     * Supports both regular page load and AJAX requests for dynamic filtering
+     */
+    public function index(Request $request)
+    {
+        $trainerId = $this->getTrainerId();
 
         if (!$trainerId) {
-            // Return empty paginated collection
-            $quizzes = new \Illuminate\Pagination\LengthAwarePaginator(
-                collect([]),
-                0,
-                5,
-                1,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-            return view('instructor.quizzes.index', compact('quizzes'));
+            return view('instructor.quizzes.index', [
+                'programs' => collect([]),
+            ]);
         }
 
-        // Get quizzes for current instructor with pagination (5 per page)
-        $quizzes = DB::table('quizzes')
-            ->leftJoin('data_programs', 'quizzes.program_id', '=', 'data_programs.id')
+        $programs = DB::table('data_programs')
+            ->leftJoin('lms_assignments', function ($join) {
+                $join->on('lms_assignments.program_id', '=', 'data_programs.id')
+                    ->where(function ($query) {
+                        $query->where('lms_assignments.type', '=', 'post-test')
+                            ->orWhereNull('lms_assignments.type');
+                    });
+            })
+            ->leftJoin('lms_submissions', 'lms_submissions.assignment_id', '=', 'lms_assignments.id')
+            ->where('data_programs.instructor_id', $trainerId)
             ->select(
-                'quizzes.*',
-                'data_programs.program as program_name'
+                'data_programs.id',
+                'data_programs.program',
+                'data_programs.image',
+                'data_programs.slug',
+                DB::raw('COUNT(DISTINCT lms_assignments.id) as final_assignment_count'),
+                DB::raw('COUNT(DISTINCT lms_submissions.id) as submission_count')
             )
-            ->where('quizzes.instructor_id', $trainerId)
-            ->orderBy('quizzes.created_at', 'desc')
-            ->paginate(5);
+            ->groupBy(
+                'data_programs.id',
+                'data_programs.program',
+                'data_programs.image',
+                'data_programs.slug'
+            )
+            ->orderBy('data_programs.program')
+            ->get();
 
-        // Transform data after pagination
-        $quizzes->getCollection()->transform(function($quiz) {
-            // Get total questions count
-            $totalQuestions = DB::table('quiz_questions')
-                ->where('quiz_id', $quiz->id)
-                ->count();
-
-            // Get total responses count
-            $totalResponses = DB::table('quiz_responses')
-                ->where('quiz_id', $quiz->id)
-                ->count();
-
-            return [
-                'id' => $quiz->id,
-                'title' => $quiz->title,
-                'program' => $quiz->program_name ?? 'N/A',
-                'type' => $quiz->type ?? 'Postest',
-                'status' => $quiz->status ?? 'draft',
-                'total_questions' => $totalQuestions,
-                'total_responses' => $totalResponses,
-                'created_at' => $quiz->created_at ? date('Y-m-d', strtotime($quiz->created_at)) : '-'
-            ];
-        });
-
-        return view('instructor.quizzes.index', compact('quizzes'));
+        return view('instructor.quizzes.index', compact('programs'));
     }
 
     /**
@@ -89,7 +76,13 @@ class QuizController extends Controller
      */
     public function create()
     {
-        return view('instructor.quizzes.create');
+        $trainerId = $this->getTrainerId();
+        $programs = DB::table('data_programs')
+            ->where('instructor_id', $trainerId)
+            ->select('id', 'program as title')
+            ->get();
+
+        return view('instructor.quizzes.create', compact('programs'));
     }
 
     /**
@@ -97,20 +90,64 @@ class QuizController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO: Add validation and store logic here
-        // $validated = $request->validate([
-        //     'title' => 'required|string|max:255',
-        //     'program_id' => 'required|exists:programs,id',
-        //     'description' => 'nullable|string',
-        //     'questions' => 'required|array',
-        //     'questions.*.question' => 'required|string',
-        //     'questions.*.type' => 'required|in:multiple_choice,essay',
-        //     'questions.*.options' => 'required_if:questions.*.type,multiple_choice|array',
-        //     'questions.*.correct_answer' => 'required_if:questions.*.type,multiple_choice',
-        // ]);
-        
-        // Store logic here
-        return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil dibuat');
+        $trainerId = $this->getTrainerId();
+        if (!$trainerId) {
+            return redirect()->back()->with('error', 'Instruktur tidak ditemukan.');
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'program_id' => 'required|exists:data_programs,id',
+            'description' => 'nullable|string',
+            'questions' => 'required|array|min:1',
+            'questions.*.text' => 'required|string',
+            'questions.*.type' => 'required|in:multiple_choice,essay,true_false',
+            'questions.*.options' => 'nullable|array',
+            'questions.*.correct_answer' => 'nullable',
+            'questions.*.points' => 'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $quizId = DB::table('quizzes')->insertGetId([
+                'instructor_id' => $trainerId,
+                'program_id' => $request->program_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'status' => 'published',
+                'type' => 'Postest',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            foreach ($request->questions as $q) {
+                $correctAnswer = $q['correct_answer'] ?? null;
+                if ($q['type'] === 'multiple_choice' && is_numeric($correctAnswer)) {
+                    $options = $q['options'] ?? [];
+                    if (isset($options[$correctAnswer])) {
+                        $correctAnswer = $options[$correctAnswer];
+                    }
+                }
+
+                DB::table('quiz_questions')->insert([
+                    'quiz_id' => $quizId,
+                    'question' => $q['text'],
+                    'type' => $q['type'],
+                    'options' => isset($q['options']) ? json_encode($q['options']) : null,
+                    'correct_answer' => $correctAnswer,
+                    'points' => $q['points'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil dibuat');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal membuat tugas: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -118,8 +155,25 @@ class QuizController extends Controller
      */
     public function show($id)
     {
-        // TODO: Get quiz by id with responses
-        return view('instructor.quizzes.show');
+        $trainerId = $this->getTrainerId();
+        $quiz = DB::table('quizzes')
+            ->leftJoin('data_programs', 'quizzes.program_id', '=', 'data_programs.id')
+            ->select('quizzes.*', 'data_programs.program as program_name')
+            ->where('quizzes.id', $id)
+            ->where('quizzes.instructor_id', $trainerId)
+            ->first();
+
+        if (!$quiz) {
+            return redirect()->route('instructor.quizzes.index')->with('error', 'Tugas tidak ditemukan');
+        }
+
+        $questions = DB::table('quiz_questions')->where('quiz_id', $id)->get();
+
+        foreach ($questions as $q) {
+            $q->options = json_decode($q->options ?? '[]', true);
+        }
+
+        return view('instructor.quizzes.show', compact('quiz', 'questions'));
     }
 
     /**
@@ -127,8 +181,34 @@ class QuizController extends Controller
      */
     public function edit($id)
     {
-        // Get quiz by id
-        return view('instructor.quizzes.edit');
+        $trainerId = $this->getTrainerId();
+        $quiz = DB::table('quizzes')
+            ->where('id', $id)
+            ->where('instructor_id', $trainerId)
+            ->first();
+
+        if (!$quiz) {
+            return redirect()->route('instructor.quizzes.index')->with('error', 'Tugas tidak ditemukan');
+        }
+
+        $questions = DB::table('quiz_questions')->where('quiz_id', $id)->get();
+        foreach ($questions as $q) {
+            $q->options = json_decode($q->options ?? '[]', true);
+
+            if ($q->type === 'multiple_choice' && $q->options && $q->correct_answer) {
+                $index = array_search($q->correct_answer, $q->options);
+                if ($index !== false) {
+                    $q->correct_answer_index = $index;
+                }
+            }
+        }
+
+        $programs = DB::table('data_programs')
+            ->where('instructor_id', $trainerId)
+            ->select('id', 'program as title')
+            ->get();
+
+        return view('instructor.quizzes.edit', compact('quiz', 'questions', 'programs'));
     }
 
     /**
@@ -136,9 +216,67 @@ class QuizController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // TODO: Add validation and update logic here
-        // Update logic here
-        return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil diupdate');
+        $trainerId = $this->getTrainerId();
+        $quiz = DB::table('quizzes')
+            ->where('id', $id)
+            ->where('instructor_id', $trainerId)
+            ->first();
+
+        if (!$quiz) {
+            return redirect()->route('instructor.quizzes.index')->with('error', 'Tugas tidak ditemukan');
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'program_id' => 'required|exists:data_programs,id',
+            'description' => 'nullable|string',
+            'questions' => 'required|array|min:1',
+            'questions.*.text' => 'required|string',
+            'questions.*.type' => 'required|in:multiple_choice,essay,true_false',
+            'questions.*.options' => 'nullable|array',
+            'questions.*.correct_answer' => 'nullable',
+            'questions.*.points' => 'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            DB::table('quizzes')->where('id', $id)->update([
+                'program_id' => $request->program_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'updated_at' => now(),
+            ]);
+
+            DB::table('quiz_questions')->where('quiz_id', $id)->delete();
+
+            foreach ($request->questions as $q) {
+                $correctAnswer = $q['correct_answer'] ?? null;
+                if ($q['type'] === 'multiple_choice' && is_numeric($correctAnswer)) {
+                    $options = $q['options'] ?? [];
+                    if (isset($options[$correctAnswer])) {
+                        $correctAnswer = $options[$correctAnswer];
+                    }
+                }
+
+                DB::table('quiz_questions')->insert([
+                    'quiz_id' => $id,
+                    'question' => $q['text'],
+                    'type' => $q['type'],
+                    'options' => isset($q['options']) ? json_encode($q['options']) : null,
+                    'correct_answer' => $correctAnswer,
+                    'points' => $q['points'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil diupdate');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal mengupdate tugas: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -146,9 +284,27 @@ class QuizController extends Controller
      */
     public function destroy($id)
     {
-        // TODO: Add delete logic here
-        // Delete logic here
-        return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil dihapus');
+        $trainerId = $this->getTrainerId();
+        $quiz = DB::table('quizzes')
+            ->where('id', $id)
+            ->where('instructor_id', $trainerId)
+            ->first();
+
+        if (!$quiz) {
+            return redirect()->route('instructor.quizzes.index')->with('error', 'Tugas tidak ditemukan');
+        }
+
+        DB::beginTransaction();
+        try {
+            DB::table('quiz_questions')->where('quiz_id', $id)->delete();
+            DB::table('quiz_responses')->where('quiz_id', $id)->delete();
+            DB::table('quizzes')->where('id', $id)->delete();
+
+            DB::commit();
+            return redirect()->route('instructor.quizzes.index')->with('success', 'Tugas/Postest berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('instructor.quizzes.index')->with('error', 'Gagal menghapus tugas');
+        }
     }
 }
-

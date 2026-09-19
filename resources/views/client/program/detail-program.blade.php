@@ -10,54 +10,11 @@
 
     <!-- KONTEN KIRI -->
     <div class="lg:col-span-2 space-y-8">
-      <!-- Lokasi -->
-      <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-        <span
-          class="px-4 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-full font-bold">{{ ucfirst($program->category) }}</span>
-
-        @if($program->type == 'online')
-          <p class="mt-4 text-sm text-gray-500 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
-              </path>
-            </svg>
-            <span class="font-medium text-gray-700">Pertemuan Virtual via Zoom</span>
-          </p>
-        @else
-          <p class="mt-4 text-sm text-gray-500 flex items-center gap-2">
-            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
-              </path>
-            </svg>
-            <span class="font-medium text-gray-700">
-              @php
-                $locationParts = array_filter([
-                  $program->village ?? null,
-                  $program->district ?? null,
-                  $program->city ?? null,
-                  $program->province ?? null
-                ]);
-              @endphp
-
-              @if(!empty($locationParts))
-                {{ implode(', ', $locationParts) }}
-              @else
-                Lokasi Offline
-              @endif
-            </span>
-          </p>
-          @if(!empty($program->full_address))
-            <p class="text-xs text-gray-500 mt-2 ml-7 leading-relaxed">{{ $program->full_address }}</p>
-          @endif
-        @endif
-
-        <p class="mt-6 text-gray-700 leading-relaxed text-base">
-          {{ $program->description }}
-        </p>
-      </div>
+      @include('client.program.partials.location-and-type', [
+        'program' => $program,
+        'isPurchased' => $isPurchased,
+        'isCourseProgram' => $isCourseProgram,
+      ])
 
       <!-- Jadwal -->
       <div
@@ -70,11 +27,10 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
-            Jadwal Pelatihan
+            Jadwal {{ ucfirst($program->category) }}
           </h2>
           <p class="text-blue-50 text-lg mb-6">
-            {{ \Carbon\Carbon::parse($program->start_date)->format('d M Y') }} -
-            {{ \Carbon\Carbon::parse($program->end_date)->format('d M Y') }} |
+            {{ $program->start_date == $program->end_date ? \Carbon\Carbon::parse($program->start_date)->format('d M Y') : \Carbon\Carbon::parse($program->start_date)->format('d M Y') . ' - ' . \Carbon\Carbon::parse($program->end_date)->format('d M Y') }} |
             {{ \Carbon\Carbon::parse($program->start_time)->format('H:i') }} -
             {{ \Carbon\Carbon::parse($program->end_time)->format('H:i') }} WIB
           </p>
@@ -92,22 +48,24 @@
       <div
         class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
         <img
-          src="{{ $program->instructor_avatar ? asset('storage/' . $program->instructor_avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($program->instructor_name ?? 'Instructor') . '&background=random' }}"
+          src="{{ $program->instructor_avatar }}"
           alt="Instruktur" class="w-20 h-20 rounded-full border-4 border-blue-50 shadow-sm">
         <div>
           <h3 class="font-bold text-xl text-gray-900 mb-1">{{ $program->instructor_name ?? 'Sukarobot' }}</h3>
           <p class="text-blue-600 font-medium mb-3">{{ $program->instructor_job ?? 'Instruktur Profesional' }}</p>
-          <p class="text-gray-600 text-sm leading-relaxed">Berpengalaman di bidangnya dan siap membimbing Anda.</p>
+          <p class="text-gray-600 text-sm leading-relaxed">{{ $program->instructor_description ?? 'Berpengalaman di bidangnya dan siap membimbing Anda.' }}.</p>
         </div>
       </div>
 
-      <!-- Materi dengan Dropdown -->
-      <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-        <h2 class="font-bold text-xl mb-6 text-gray-900">Materi Pembelajaran</h2>
+      <!-- Silabus -->
+      <div id="silabus-kelas" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 scroll-mt-32">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+          <h2 class="font-bold text-xl text-gray-900">Silabus Kelas</h2>
+        </div>
+
         <div class="space-y-4">
           @forelse($program->learning_materials as $index => $material)
-            <div
-              class="accordion border border-gray-200 rounded-xl p-5 cursor-pointer hover:bg-gray-50 transition-colors duration-300 group">
+            <div class="accordion border border-gray-200 rounded-xl p-5 cursor-pointer hover:bg-gray-50 transition-colors duration-300 group">
               <div class="flex justify-between items-center">
                 <h4 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
                   {{ $material['title'] ?? 'Hari ' . ($index + 1) }}
@@ -121,7 +79,16 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Durasi: {{ $material['duration'] }}
+                    @php
+                      $durationParts = explode(':', $material['duration']);
+                      $hours = intval($durationParts[0] ?? 0);
+                      $minutes = intval($durationParts[1] ?? 0);
+                      $durationText = '';
+                      if ($hours > 0) $durationText .= $hours . ' Jam';
+                      if ($minutes > 0) $durationText .= ($hours > 0 ? ' ' : '') . $minutes . ' Menit';
+                      if (empty($durationText)) $durationText = '0 Menit';
+                    @endphp
+                    Durasi: {{ $durationText }}
                   </div>
                 @endif
                 @if(!empty($material['description']))
@@ -142,31 +109,55 @@
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-28">
         <!-- Poster -->
         <div class="relative overflow-hidden rounded-xl mb-6 group">
-          <img src="{{ asset($program->image ?? 'sukarobot.com/source/img/Sukarobot-logo.png') }}" alt="Poster Kelas"
+          @php
+              $detailImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
+                  ? asset($program->image) 
+                  : ($program->image ? asset('storage/' . $program->image) : asset('sukarobot.com/source/img/Sukarobot-logo.png'));
+          @endphp
+          <img src="{{ $detailImageUrl }}" alt="Poster Kelas"
             class="w-full object-cover transform group-hover:scale-105 transition duration-500">
         </div>
 
-        <!-- Harga -->
-        <div class="mb-6">
-          <p class="text-sm text-gray-500 mb-1">Harga Kelas</p>
-          @if($program->price > 0)
-            <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($program->price, 0, ',', '.') }}</p>
-          @else
-            <p class="text-3xl font-bold text-green-600">GRATIS</p>
-          @endif
-        </div>
+        @include('client.program.partials.purchase-cta-button', [
+          'isPurchased' => $isPurchased,
+          'isCourseProgram' => $isCourseProgram,
+          'program' => $program,
+        ])
 
-        <!-- Tombol -->
-        <div class="flex flex-col gap-3 mb-8">
-          <a href="#"
-            class="w-full bg-gray-400 text-white py-3.5 rounded-xl font-bold cursor-not-allowed opacity-75 shadow-none text-center pointer-events-none">
-            Maintenance
-          </a>
-          <button disabled
-            class="w-full border-2 border-gray-200 text-gray-400 py-3.5 rounded-xl font-bold cursor-not-allowed opacity-75">
-            Maintenance
-          </button>
-        </div>
+        @if(!$isPurchased)
+          <!-- Harga -->
+          <div class="mb-6">
+            <p class="text-sm text-gray-500 mb-1">Harga {{ ucfirst($program->category) }}</p>
+            @if($program->price > 0)
+              <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($program->price, 0, ',', '.') }}</p>
+            @else
+              <p class="text-3xl font-bold text-green-600">GRATIS</p>
+            @endif
+          </div>
+          
+          @php
+              $now = \Carbon\Carbon::now();
+              $startDate = \Carbon\Carbon::parse($program->start_date);
+              $endDate = \Carbon\Carbon::parse($program->end_date);
+              $isRunning = $now->between($startDate, $endDate);
+              $isFinished = $now->gt($endDate);
+              $isUpcoming = $now->lt($startDate);
+              $isSoldOut = $program->available_slots <= 0;
+          @endphp
+
+          @include('client.program.partials.purchase-status-buttons', [
+            'isSoldOut' => $isSoldOut,
+            'isCourseProgram' => $isCourseProgram,
+            'isFinished' => $isFinished,
+            'isRunning' => $isRunning,
+            'program' => $program,
+          ])
+        @endif
+
+        @include('client.program.partials.voucher-recommendations', [
+          'recommendedVouchers' => $recommendedVouchers,
+          'isPurchased' => $isPurchased,
+        ])
 
         <!-- Benefit -->
         <div class="mb-8">

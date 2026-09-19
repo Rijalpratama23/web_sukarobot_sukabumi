@@ -21,23 +21,84 @@ class DashboardController extends Controller
         $totalInstructors = DB::table('users')->where('role', 'instructor')->count();
         $totalAdmins = DB::table('users')->where('role', 'admin')->count();
         $totalTrainers = DB::table('data_trainers')->where('status_trainer', 'Aktif')->count();
-        $totalStudents = DB::table('data_siswas')->where('status_siswa', 'Aktif')->count();
+        $totalStudents = DB::table('users')->where('role', 'user')->where('is_active', 1)->count();
         $totalPrograms = DB::table('data_programs')->count();
         
-        // Program tersedia (status = published)
+        $now = Carbon::now();
+        
+        // Program Aktif: published AND not finished (running or upcoming)
         $programsAvailable = DB::table('data_programs')
             ->where('status', 'published')
+            ->where('end_date', '>=', $now)
             ->count();
         
-        // Program tidak tersedia (status != published)
+        // Program Non Aktif: finished (end_date passed) OR not published (draft/archived)
         $programsUnavailable = DB::table('data_programs')
-            ->whereIn('status', ['draft', 'archived'])
+            ->where(function ($query) use ($now) {
+                $query->where('end_date', '<', $now)
+                      ->orWhereIn('status', ['draft', 'archived']);
+            })
             ->count();
         
         // Calculate total revenue from transactions table (only paid transactions)
         $totalRevenue = DB::table('transactions')
             ->where('status', 'paid')
             ->sum('amount') ?? 0;
+
+        // ===== FINANCIAL SUMMARY DATA =====
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        // Monthly Revenue (current month)
+        $monthlyRevenue = DB::table('transactions')
+            ->where('status', 'paid')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->sum('amount') ?? 0;
+        
+        // Yearly Revenue (current year)
+        $yearlyRevenue = DB::table('transactions')
+            ->where('status', 'paid')
+            ->whereYear('created_at', $currentYear)
+            ->sum('amount') ?? 0;
+        
+        // Monthly Transaction Count (current month)
+        $monthlyTransactions = DB::table('transactions')
+            ->where('status', 'paid')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        // Yearly Transaction Count (current year)
+        $yearlyTransactions = DB::table('transactions')
+            ->where('status', 'paid')
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        // Total Kursus (active programs/courses)
+        $totalCourses = DB::table('data_programs')
+            ->where('status', 'published')
+            ->count();
+
+        // ===== PROGRAM REVIEWS DATA =====
+        $programReviews = DB::table('program_proofs')
+            ->join('users', 'program_proofs.student_id', '=', 'users.id')
+            ->join('data_programs', 'program_proofs.program_id', '=', 'data_programs.id')
+            ->whereNotNull('program_proofs.rating')
+            ->select(
+                'program_proofs.id',
+                'program_proofs.student_id',
+                'program_proofs.program_id',
+                'program_proofs.rating',
+                'program_proofs.review',
+                'program_proofs.created_at',
+                'users.name as student_name',
+                'users.avatar as student_avatar',
+                'data_programs.program as program_name'
+            )
+            ->orderBy('program_proofs.created_at', 'desc')
+            ->limit(20)
+            ->get();
 
         // Get recent programs
         $recentPrograms = DB::table('data_programs')
@@ -58,6 +119,12 @@ class DashboardController extends Controller
             'programsAvailable',
             'programsUnavailable',
             'totalRevenue',
+            'monthlyRevenue',
+            'yearlyRevenue',
+            'monthlyTransactions',
+            'yearlyTransactions',
+            'totalCourses',
+            'programReviews',
             'recentPrograms',
             'chartData'
         ));
@@ -93,9 +160,26 @@ class DashboardController extends Controller
         
         $maxYear = max(
             $latestUserDate ? Carbon::parse($latestUserDate)->year : now()->year,
-            $latestProgramDate ? Carbon::parse($latestProgramDate)->year : now()->year,
-            now()->year // Always include current year
+            $latestProgramDate ? Carbon::parse($latestProgramDate)->year : now()->year
         );
+        
+        // Only include current year if it has data or if it's within the range
+        $currentYear = now()->year;
+        if ($currentYear < $minYear || $currentYear > $maxYear) {
+            // Check if current year has any data
+            $hasCurrentYearData = DB::table('users')
+                ->whereYear('created_at', $currentYear)
+                ->exists() || DB::table('data_programs')
+                ->whereYear('created_at', $currentYear)
+                ->exists() || DB::table('transactions')
+                ->whereYear('created_at', $currentYear)
+                ->exists();
+                
+            if ($hasCurrentYearData) {
+                $maxYear = max($maxYear, $currentYear);
+                $minYear = min($minYear, $currentYear);
+            }
+        }
         
         // Generate years array from min to max
         $years = range($maxYear, $minYear); // Descending order (newest first)
@@ -110,37 +194,43 @@ class DashboardController extends Controller
             $programsData = [];
 
             // Get 12 months for this year
+            $yearStart = Carbon::create($year, 1, 1)->startOfYear();
+            
             for ($month = 1; $month <= 12; $month++) {
                 $date = Carbon::create($year, $month, 1);
-                $monthStart = $date->copy()->startOfMonth();
                 $monthEnd = $date->copy()->endOfMonth();
                 
                 $months[] = $date->format('M');
                 
-                // Revenue data (from transactions)
+                // Revenue data - monthly (non-cumulative)
+                $monthStart = $date->copy()->startOfMonth();
                 $revenue = DB::table('transactions')
                     ->where('status', 'paid')
-                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->where('created_at', '>=', $monthStart)
+                    ->where('created_at', '<=', $monthEnd)
                     ->sum('amount') ?? 0;
                 $revenueData[] = (int) $revenue;
                 
-                // Users data (total users created in that month)
+                // Users data - cumulative within this year only
                 $users = DB::table('users')
                     ->where('role', 'user')
-                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->where('created_at', '>=', $yearStart)
+                    ->where('created_at', '<=', $monthEnd)
                     ->count();
                 $usersData[] = $users;
                 
-                // Instructors data (total instructors created in that month)
+                // Instructors data - cumulative within this year only
                 $instructors = DB::table('users')
                     ->where('role', 'instructor')
-                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->where('created_at', '>=', $yearStart)
+                    ->where('created_at', '<=', $monthEnd)
                     ->count();
                 $instructorsData[] = $instructors;
                 
-                // Programs data (total programs created in that month)
+                // Programs data - cumulative within this year only
                 $programs = DB::table('data_programs')
-                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->where('created_at', '>=', $yearStart)
+                    ->where('created_at', '<=', $monthEnd)
                     ->count();
                 $programsData[] = $programs;
             }

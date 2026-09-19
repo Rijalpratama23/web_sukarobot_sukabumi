@@ -21,7 +21,7 @@ body {
 .partner-track {
   display: flex;
   width: max-content;
-  animation: scroll-left 25s linear infinite;
+  animation: scroll-left 40s linear infinite;
 }
 
 .partner-track.track-right {
@@ -31,16 +31,14 @@ body {
 .partner-logo {
   height: 42px;
   margin: 0 24px;
-  opacity: 0.8;
-  filter: grayscale(100%) opacity(0.7);
-  transition: transform 0.3s ease, filter 0.3s ease;
+  opacity: 1;
+  transition: transform 0.3s ease;
   object-fit: contain;
   flex-shrink: 0;
 }
 
 .partner-logo:hover {
   transform: scale(1.1);
-  filter: grayscale(0%) opacity(1);
 }
 
 /* Animasi bergerak dua arah */

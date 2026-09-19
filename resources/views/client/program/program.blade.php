@@ -1,22 +1,16 @@
 @extends('client.main')
 @section('body')
-
     @php
-    // Get current active category
-    $currentCategory = $activeCategory ?? 'all';
-    
-    // Category display names
-    $categoryNames = [
-        'all' => 'Semua Kelas',
-        'kursus' => 'Kursus',
-        'pelatihan' => 'Pelatihan',
-        'sertifikasi' => 'Sertifikasi',
-        'outing-class' => 'Outing Class',
-        'outboard' => 'Outboard'
-    ];
-
-    // Hero Content Data
-    $heroContent = [
+        $currentCategory = $activeCategory ?? 'all';
+        $categoryNames = [
+            'kursus' => 'Kursus',
+            'pelatihan' => 'Pelatihan',
+            'sertifikasi' => 'Sertifikasi',
+            'outing-class' => 'Outing Class',
+            'outboard' => 'Outboard',
+        ];
+        // Hero Content Data
+        $heroContent = [
         'all' => [
             'title' => 'Kelas di E-Learning tersedia dari level <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Dasar hingga Profesional</span>',
             'description' => 'Tingkatkan kompetensi Anda sesuai kebutuhan industri terkini dengan kurikulum yang terstruktur dan mentor berpengalaman.'
@@ -41,7 +35,7 @@
             'title' => 'Bangun karakter dan kerjasama tim melalui <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Program Outboard</span>',
             'description' => 'Kegiatan luar ruangan yang menantang untuk meningkatkan kepemimpinan dan soliditas tim.'
         ]
-    ];
+        ];
     @endphp
 
     <!-- Top Navigation Menu -->
@@ -95,16 +89,16 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="py-16 bg-gradient-to-br from-blue-50 via-white to-orange-50 relative overflow-hidden text-center">
+    <section class="py-8 bg-gradient-to-br from-blue-50 via-white to-orange-50 relative overflow-hidden text-center">
         <!-- Background Elements -->
         <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-orange-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
 
-        <div class="relative z-10 max-w-4xl mx-auto px-6">
+        <div class="relative z-10 max-w-2xl mx-auto px-6">
             <h1 id="hero-title" class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">
                 {!! $heroContent[$currentCategory]['title'] ?? $heroContent['all']['title'] !!}
             </h1>
-            <p id="hero-description" class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
+            <p id="hero-description" class="text-gray-600 text-sm mb-8 max-w-2xl mx-auto">
                 {{ $heroContent[$currentCategory]['description'] ?? $heroContent['all']['description'] }}
             </p>
             <div class="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-orange-500 mx-auto rounded-full"></div>
@@ -120,17 +114,28 @@
                 Menampilkan {{ $currentCategory === 'all' ? 'semua program' : 'program ' . strtolower($categoryNames[$currentCategory] ?? $currentCategory) }}
             </div>
 
-            <!-- Right side: Sort Options -->
-            <div class="flex items-center gap-3">
-                <span class="text-gray-600 text-sm font-medium">Urutkan:</span>
-                <div class="relative">
-                    <select id="sort-select" class="appearance-none border border-gray-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white cursor-pointer hover:border-blue-400 transition shadow-sm font-medium text-gray-700">
-                        <option value="newest">Terbaru</option>
-                        <option value="oldest">Terlama</option>
-                        <option value="available">Tersedia</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7 7"></path></svg>
+            <!-- Right side: Sort Options & Search -->
+            <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="program-search-input" placeholder="Cari program..." 
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <span class="text-gray-600 text-sm font-medium whitespace-nowrap">Urutkan:</span>
+                    <div class="relative w-full md:w-auto">
+                        <select id="sort-select" class="w-full md:w-auto appearance-none border border-gray-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white cursor-pointer hover:border-blue-400 transition shadow-sm font-medium text-gray-700">
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="available">Tersedia</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -142,13 +147,25 @@
         <div class="kelas-container grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             @forelse ($programs as $program)
                 <!-- Program Card: {{ $program->program }} -->
+                @php
+                    $programImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
+                        ? asset($program->image) 
+                        : ($program->image ? asset('storage/' . $program->image) : 'https://picsum.photos/400/250?random=' . $program->id);
+                    $now = \Carbon\Carbon::now();
+                    $startDate = \Carbon\Carbon::parse($program->start_date);
+                    $endDate = \Carbon\Carbon::parse($program->end_date);
+                    $isRunning = $now->between($startDate, $endDate);
+                    $isFinished = $now->gt($endDate);
+                @endphp
                 <a href="{{ route('client.program.detail', $program->slug) }}" class="block group kelas-card"
                     data-category="{{ $program->category }}" data-date="{{ $program->created_at }}"
-                    data-slots="{{ $program->available_slots }}">
+                    data-slots="{{ $program->available_slots }}"
+                    data-is-running="{{ $isRunning ? 'true' : 'false' }}"
+                    data-is-finished="{{ $isFinished ? 'true' : 'false' }}">
                     <article
                         class="h-full flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 {{ $program->available_slots == 0 ? 'grayscale opacity-80 hover:opacity-100' : '' }}">
                         <div class="relative overflow-hidden">
-                            <img src="{{ asset($program->image ?? 'https://picsum.photos/400/250?random=' . $program->id) }}"
+                            <img src="{{ $programImageUrl }}"
                                 class="w-full h-52 object-cover transform group-hover:scale-105 transition duration-500"
                                 alt="{{ $program->program }}">
                             @if($program->available_slots == 0)
@@ -156,6 +173,16 @@
                                     <span
                                         class="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Kuota
                                         Habis</span>
+                                </div>
+                            @elseif($isFinished)
+                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                    <span
+                                        class="bg-gray-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Selesai</span>
+                                </div>
+                            @elseif($isRunning)
+                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                    <span
+                                        class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Sedang Berjalan</span>
                                 </div>
                             @endif
                             <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 z-20 shadow-sm">
@@ -171,7 +198,7 @@
 
                             <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                 {{ $program->program }}</h3>
-                            <p class="text-gray-600 text-sm mb-5 line-clamp-2 leading-relaxed">{{ $program->description }}</p>
+                            <p class="text-gray-600 text-[10px] mb-5 line-clamp-2 leading-relaxed">{{ $program->description }}</p>
                             
                             <div class="flex items-center gap-4 text-sm text-gray-500 mb-6">
                                 <div class="flex items-center gap-1.5">
@@ -186,7 +213,7 @@
 
                             <div class="mt-auto pt-5 border-t border-gray-100 flex justify-between items-center">
                                 <div class="flex items-center gap-2">
-                                    <img src="{{ $program->instructor_avatar ? asset('storage/' . $program->instructor_avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($program->instructor_name ?? 'Instructor') . '&background=random' }}" class="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="Instructor">
+                                    <img src="{{ $program->instructor_avatar }}" class="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="Instructor">
                                     <div class="text-xs">
                                         <p class="font-bold text-gray-900">{{ $program->instructor_name ?? 'Sukarobot' }}</p>
                                         <p class="text-gray-500">{{ $program->instructor_job ?? 'Mentor' }}</p>
@@ -203,8 +230,35 @@
                 </a>
             @empty
                 <!-- No programs found -->
-                <div class="col-span-full text-center py-12">
-                    <p class="text-gray-500 text-lg">Belum ada program tersedia</p>
+                <!-- No programs found -->
+                <div class="col-span-full w-full flex flex-col items-center justify-center py-20 text-center">
+                    <div class="relative w-48 h-48 mb-6 animate-bounce" style="animation-duration: 3s;">
+                        <!-- Animated Illustration (Robotic/Tech Theme) -->
+                        <svg class="w-full h-full drop-shadow-xl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Floating Elements -->
+                            <circle cx="100" cy="100" r="80" class="fill-blue-50 animate-pulse" style="animation-duration: 4s;"/>
+                            
+                            <!-- Robot Head / Search Icon Composite -->
+                            <path d="M60 90C60 67.9086 77.9086 50 100 50C122.091 50 140 67.9086 140 90V130C140 141.046 131.046 150 120 150H80C68.9543 150 60 141.046 60 130V90Z" class="fill-white"/>
+                            <rect x="75" y="80" width="15" height="15" rx="7.5" class="fill-blue-200"/>
+                            <rect x="110" y="80" width="15" height="15" rx="7.5" class="fill-blue-200"/>
+                            <path d="M85 115C85 115 90 122 100 122C110 122 115 115 115 115" stroke="#93C5FD" stroke-width="4" stroke-linecap="round"/>
+                            
+                            <!-- Gear Icon (Rotating) -->
+                            <g class="origin-center animate-[spin_10s_linear_infinite]" style="transform-box: fill-box;">
+                                <path d="M160 50L170 45L165 35L155 40L160 50Z" class="fill-orange-400"/>
+                                <circle cx="160" cy="45" r="3" class="fill-white"/>
+                            </g>
+
+                            <!-- Search Magnifier -->
+                            <path d="M130 130L150 150" stroke="#F97316" stroke-width="8" stroke-linecap="round"/>
+                            <circle cx="125" cy="125" r="15" class="stroke-orange-500 fill-white" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Belum Ada Program</h3>
+                    <p class="text-gray-500 max-w-md mx-auto mb-8 text-lg">
+                        Saat ini kami sedang menyiapkan program terbaik untuk kategori ini. <br>Silakan cek kategori lainnya!
+                    </p>
                 </div>
             @endforelse
         </div>
@@ -214,3 +268,6 @@
 
 <link rel="stylesheet" href="{{ asset('assets/elearning/client/css/program/program.css') }}">
 <script src="{{ asset('assets/elearning/client/js/program/program.js') }}"></script>
+<script>
+    // Inline script removed - logic moved to program.js
+</script>

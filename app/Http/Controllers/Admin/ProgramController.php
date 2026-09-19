@@ -3,8 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\DataTableService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;  
+use Illuminate\Support\Facades\Log;   
 use Illuminate\Support\Str;
 
 class ProgramController extends Controller
@@ -12,39 +18,85 @@ class ProgramController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $programs = DB::table('data_programs')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = DB::table('data_programs')
+            ->select('id', 'program', 'image', 'category', 'start_date', 'type', 'price', 'quota', 'enrolled_count', 'rating', 'created_at');
 
-        $programs->getCollection()->transform(function ($program) {
-            $levelCount = DB::table('data_levels')
-                ->where('id_programs', $program->id)
-                ->count();
+        // Get categories for filter
+        $categories = DB::table('data_programs')
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->pluck('category')
+            ->mapWithKeys(fn($cat) => [$cat => ucfirst($cat)])
+            ->toArray();
 
-            $scheduleCount = DB::table('schedules')
-                ->where('id_program', $program->id)
-                ->where('ket', 'Aktif')
-                ->count();
+        $data = app(DataTableService::class)->make($query, [
+            'columns' => [
+                ['key' => 'title', 'label' => 'Program', 'sortable' => true, 'type' => 'primary'],
+                ['key' => 'image', 'label' => 'Gambar', 'type' => 'image'],
+                ['key' => 'category', 'label' => 'Kategori', 'sortable' => true],
+                ['key' => 'type', 'label' => 'Tipe', 'sortable' => true],
+                ['key' => 'price', 'label' => 'Harga', 'sortable' => true, 'type' => 'currency'],
+                ['key' => 'start_date', 'label' => 'Tanggal Mulai', 'sortable' => true, 'type' => 'date'],
+                ['key' => 'actions', 'label' => 'Aksi', 'type' => 'actions'],
+            ],
+            'searchable' => ['program', 'category', 'type'],
+            'sortable' => ['program', 'category', 'start_date', 'type', 'price', 'created_at'],
+            'sortColumns' => [
+                'title' => 'program',
+            ],
+            'actions' => ['edit', 'delete'],
+            'route' => 'admin.programs',
+            'title' => 'Manajemen Program',
+            'entity' => 'program',
+            'createLabel' => 'Tambah Program',
+            'searchPlaceholder' => 'Cari program, kategori, tipe...',
+            'filter' => [
+                'key' => 'category',
+                'column' => 'category',
+                'options' => array_merge(['' => 'Semua Kategori'], $categories)
+            ],
+            'transformer' => function ($program) {
+                $levelCount = DB::table('data_levels')
+                    ->where('id_programs', $program->id)
+                    ->count();
 
-            return [
-                'id' => $program->id,
-                'title' => $program->program,
-                'image' => $program->image,
-                'category' => ucfirst($program->category ?? '-'),
-                'start_date' => $program->start_date ? date('d F Y', strtotime($program->start_date)) : '-',
-                'type' => ucfirst($program->type ?? '-'),
-                'price' => $program->price ? 'Rp ' . number_format($program->price, 0, ',', '.') : 'Gratis',
-                'level_count' => $levelCount,
-                'schedule_count' => $scheduleCount,
-                'quota' => $program->quota,
-                'enrolled_count' => $program->enrolled_count,
-                'rating' => $program->rating,
-            ];
-        });
+                $scheduleCount = DB::table('schedules')
+                    ->where('id_program', $program->id)
+                    ->where('ket', 'Aktif')
+                    ->count();
 
-        return view('admin.programs.index', compact('programs'));
+                $formattedStartDate = '-';
+                if ($program->start_date) {
+                    $formattedStartDate = Carbon::parse($program->start_date)->locale('id')->translatedFormat('d F Y');
+                }
+
+                return [
+                    'id' => $program->id,
+                    'title' => $program->program,
+                    'image' => $program->image,
+                    'category' => ucfirst($program->category ?? '-'),
+                    'start_date' => $formattedStartDate,
+                    'start_date_raw' => $program->start_date,
+                    'type' => ucfirst($program->type ?? '-'),
+                    'price' => $program->price ?? 0,
+                    'price_raw' => $program->price ?? 0,
+                    'level_count' => $levelCount,
+                    'schedule_count' => $scheduleCount,
+                    'quota' => $program->quota,
+                    'enrolled_count' => $program->enrolled_count,
+                    'rating' => $program->rating,
+                ];
+            },
+        ], $request);
+
+        if ($request->wantsJson()) {
+            return response()->json($data);
+        }
+
+        return view('admin.programs.index', compact('data'));
     }
 
     /**
@@ -52,7 +104,16 @@ class ProgramController extends Controller
      */
     public function create()
     {
-        return view('admin.programs.create');
+        // Get all instructors from data_trainers table
+        $instructors = DB::table('data_trainers')
+            ->select('id', 'nama')
+            ->orderBy('nama')
+            ->get();
+
+        $lmsCurriculumJson = '[]';
+        $lmsAssignmentJson = '[]';
+
+        return view('admin.programs.create', compact('instructors', 'lmsCurriculumJson', 'lmsAssignmentJson'));
     }
 
     /**
@@ -63,18 +124,18 @@ class ProgramController extends Controller
         // Base validation rules
         $rules = [
             'program' => 'required|string|max:255',
-            'category' => 'required|in:kursus,pelatihan,sertifikasi,outing-class,outboard',
-            'type' => 'required|in:online,offline',
+            'category' => 'required|in:Kursus,Pelatihan,Sertifikasi,Outing Class,Outboard',
+            'type' => 'nullable|in:online,offline',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'instructor_id' => 'nullable|exists:users,id',
+            'instructor_id' => 'nullable|exists:data_trainers,id',
 
             'quota' => 'required|integer|min:1',
-            'start_date' => 'required|date',
-            'start_time' => 'required',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'end_time' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'start_date' => 'nullable|date',
+            'start_time' => 'nullable',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'end_time' => 'nullable',
+            'image' => 'required|image|mimes:jpeg,jpg,png|max:2048',
             'tools.*' => 'nullable|string',
             'materials.*.title' => 'nullable|string',
             'materials.*.duration' => 'nullable|string',
@@ -83,9 +144,17 @@ class ProgramController extends Controller
         ];
 
         // Conditional validation
+        if ($request->category !== 'Kursus') {
+            $rules['type'] = 'required|in:online,offline';
+            $rules['start_date'] = 'required|date';
+            $rules['start_time'] = 'required';
+            $rules['end_date'] = 'required|date|after_or_equal:start_date';
+            $rules['end_time'] = 'required';
+        }
+
         if ($request->type === 'online') {
-            $rules['zoom_link'] = 'required|url';
-        } elseif ($request->type === 'offline') {
+            $rules['zoom_link'] = 'nullable|url';
+        } elseif ($request->type === 'offline' && $request->category !== 'Kursus') {
             $rules['province'] = 'required|string';
             $rules['city'] = 'required|string';
             $rules['district'] = 'required|string';
@@ -110,8 +179,7 @@ class ProgramController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/programs'), $imageName);
-            $imagePath = 'images/programs/' . $imageName;
+            $imagePath = $image->storeAs('programs', $imageName, 'public');
         }
 
         // Prepare JSON fields
@@ -133,7 +201,7 @@ class ProgramController extends Controller
             'slug' => $slug,
             'description' => $validated['description'],
             'category' => $validated['category'],
-            'type' => $validated['type'],
+            'type' => $validated['type'] ?? 'online',
             'price' => $validated['price'],
             'instructor_id' => $validated['instructor_id'] ?? null,
 
@@ -155,7 +223,19 @@ class ProgramController extends Controller
         ];
 
         // Type-specific fields
-        if ($validated['type'] === 'online') {
+        if ($validated['category'] === 'Kursus') {
+            $data['start_date'] = null;
+            $data['start_time'] = null;
+            $data['end_date'] = null;
+            $data['end_time'] = null;
+            $data['zoom_link'] = null;
+            $data['province'] = null;
+            $data['city'] = null;
+            $data['district'] = null;
+            $data['village'] = null;
+            $data['full_address'] = null;
+            $data['type'] = 'online';
+        } elseif ($validated['type'] === 'online') {
             $data['zoom_link'] = $validated['zoom_link'];
             $data['province'] = null;
             $data['city'] = null;
@@ -171,7 +251,10 @@ class ProgramController extends Controller
             $data['full_address'] = $validated['full_address'];
         }
 
-        DB::table('data_programs')->insert($data);
+        $programId = DB::table('data_programs')->insertGetId($data);
+
+        $this->syncLmsData($programId, $request);
+        $this->syncProgramApprovalFromAdmin($programId, $data, $request);
 
         return redirect()->route('admin.programs.index')->with('success', 'Program berhasil ditambahkan');
     }
@@ -192,7 +275,94 @@ class ProgramController extends Controller
         $program->learning_materials = json_decode($program->learning_materials, true) ?? [];
         $program->benefits = json_decode($program->benefits, true) ?? [];
 
-        return view('admin.programs.edit', compact('program'));
+        // Build LMS JSON from relationships for the form
+        $sections = \App\Models\CourseSection::with('lessons')->where('program_id', $program->id)->orderBy('order')->get();
+        $lmsCurriculumJson = $sections->toJson();
+
+        $assignments = \App\Models\CourseAssignment::where('program_id', $program->id)->get();
+        $lmsAssignmentJson = $assignments->toJson();
+
+        // Get all instructors from data_trainers table
+        $instructors = DB::table('data_trainers')
+            ->select('id', 'nama')
+            ->orderBy('nama')
+            ->get();
+
+        // Prepare location data for pre-population (if offline)
+        $locationData = null;
+        if ($program->type === 'offline') {
+            $locationData = $this->getLocationIds($program);
+        }
+
+        return view('admin.programs.edit', compact('program', 'instructors', 'locationData', 'lmsCurriculumJson', 'lmsAssignmentJson'));
+    }
+
+    // Add this helper method to find IDs from names
+    private function getLocationIds($program)
+    {
+        try {
+            $locationIds = [
+                'province_id' => null,
+                'city_id' => null,
+                'district_id' => null,
+                'village_id' => null,
+            ];
+
+            // Get provinces and find matching ID
+            $provinces = Cache::remember('provinces', 3600, function () {
+                $response = Http::get('https://gilarya.github.io/data-indonesia/provinsi.json');
+                return $response->successful() ? $response->json() : [];
+            });
+
+            $province = collect($provinces)->firstWhere('nama', $program->province);
+            if (!$province) return $locationIds;
+            
+            $locationIds['province_id'] = $province['id'];
+
+            // Get cities and find matching ID
+            $cities = Cache::remember("cities_{$province['id']}", 3600, function () use ($province) {
+                $response = Http::get("https://gilarya.github.io/data-indonesia/kabupaten/{$province['id']}.json");
+                return $response->successful() ? $response->json() : [];
+            });
+
+            $city = collect($cities)->firstWhere('nama', $program->city);
+            if (!$city) return $locationIds;
+            
+            $locationIds['city_id'] = $city['id'];
+
+            // Get districts and find matching ID
+            $districts = Cache::remember("districts_{$city['id']}", 3600, function () use ($city) {
+                $response = Http::get("https://gilarya.github.io/data-indonesia/kecamatan/{$city['id']}.json");
+                return $response->successful() ? $response->json() : [];
+            });
+
+            $district = collect($districts)->firstWhere('nama', $program->district);
+            if (!$district) return $locationIds;
+            
+            $locationIds['district_id'] = $district['id'];
+
+            // Get villages and find matching ID
+            $villages = Cache::remember("villages_{$district['id']}", 3600, function () use ($district) {
+                $response = Http::get("https://gilarya.github.io/data-indonesia/kelurahan/{$district['id']}.json");
+                return $response->successful() ? $response->json() : [];
+            });
+
+            $village = collect($villages)->firstWhere('nama', $program->village);
+            if ($village) {
+                $locationIds['village_id'] = $village['id'];
+            }
+
+            return $locationIds;
+
+        } catch (\Exception $e) {
+            \Log::error('Error getting location IDs: ' . $e->getMessage());
+            return [
+                'province_id' => null,
+                'city_id' => null,
+                'district_id' => null,
+                'village_id' => null,
+            ];
+        }
     }
 
     /**
@@ -209,17 +379,16 @@ class ProgramController extends Controller
         // Base validation
         $rules = [
             'program' => 'required|string|max:255',
-            'category' => 'required|in:kursus,pelatihan,sertifikasi,outing-class,outboard',
-            'type' => 'required|in:online,offline',
+            'category' => 'required|in:Kursus,Pelatihan,Sertifikasi,Outing Class,Outboard',
+            'type' => 'nullable|in:online,offline',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'instructor_id' => 'nullable|exists:users,id',
-
+            'instructor_id' => 'nullable|exists:data_trainers,id',
             'quota' => 'required|integer|min:1',
-            'start_date' => 'required|date',
-            'start_time' => 'required',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'end_time' => 'required',
+            'start_date' => 'nullable|date',
+            'start_time' => 'nullable',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'end_time' => 'nullable',
             'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'tools.*' => 'nullable|string',
             'materials.*.title' => 'nullable|string',
@@ -228,9 +397,17 @@ class ProgramController extends Controller
             'benefits.*' => 'nullable|string',
         ];
 
+        if ($request->category !== 'Kursus') {
+            $rules['type'] = 'required|in:online,offline';
+            $rules['start_date'] = 'required|date';
+            $rules['start_time'] = 'required';
+            $rules['end_date'] = 'required|date|after_or_equal:start_date';
+            $rules['end_time'] = 'required';
+        }
+
         if ($request->type === 'online') {
-            $rules['zoom_link'] = 'required|url';
-        } elseif ($request->type === 'offline') {
+            $rules['zoom_link'] = 'nullable|url';
+        } elseif ($request->type === 'offline' && $request->category !== 'Kursus') {
             $rules['province'] = 'required|string';
             $rules['city'] = 'required|string';
             $rules['district'] = 'required|string';
@@ -256,14 +433,18 @@ class ProgramController extends Controller
         // Handle image upload
         $imagePath = $program->image;
         if ($request->hasFile('image')) {
-            if ($program->image && file_exists(public_path($program->image))) {
-                unlink(public_path($program->image));
+            // Delete old image
+            if ($program->image) {
+                if (Storage::disk('public')->exists($program->image)) {
+                    Storage::disk('public')->delete($program->image);
+                } elseif (file_exists(public_path($program->image))) {
+                    unlink(public_path($program->image));
+                }
             }
 
             $image = $request->file('image');
             $imageName = time() . '_' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/programs'), $imageName);
-            $imagePath = 'images/programs/' . $imageName;
+            $imagePath = $image->storeAs('programs', $imageName, 'public');
         }
 
         // Prepare JSON fields
@@ -285,7 +466,7 @@ class ProgramController extends Controller
             'slug' => $slug,
             'description' => $validated['description'],
             'category' => $validated['category'],
-            'type' => $validated['type'],
+            'type' => $validated['type'] ?? 'online',
             'price' => $validated['price'],
             'instructor_id' => $validated['instructor_id'] ?? null,
 
@@ -302,7 +483,19 @@ class ProgramController extends Controller
         ];
 
         // Type-specific fields
-        if ($validated['type'] === 'online') {
+        if ($validated['category'] === 'Kursus') {
+            $data['start_date'] = null;
+            $data['start_time'] = null;
+            $data['end_date'] = null;
+            $data['end_time'] = null;
+            $data['zoom_link'] = null;
+            $data['province'] = null;
+            $data['city'] = null;
+            $data['district'] = null;
+            $data['village'] = null;
+            $data['full_address'] = null;
+            $data['type'] = 'online';
+        } elseif ($validated['type'] === 'online') {
             $data['zoom_link'] = $validated['zoom_link'];
             $data['province'] = null;
             $data['city'] = null;
@@ -320,6 +513,9 @@ class ProgramController extends Controller
 
         DB::table('data_programs')->where('id', $id)->update($data);
 
+        $this->syncLmsData($id, $request);
+        $this->syncProgramApprovalFromAdmin($id, $data, $request);
+
         return redirect()->route('admin.programs.index')->with('success', 'Program berhasil diupdate');
     }
 
@@ -336,8 +532,12 @@ class ProgramController extends Controller
             }
 
             // Delete image
-            if ($program->image && file_exists(public_path($program->image))) {
-                unlink(public_path($program->image));
+            if ($program->image) {
+                if (Storage::disk('public')->exists($program->image)) {
+                    Storage::disk('public')->delete($program->image);
+                } elseif (file_exists(public_path($program->image))) {
+                    unlink(public_path($program->image));
+                }
             }
 
             DB::table('data_programs')->where('id', $id)->delete();
@@ -345,5 +545,128 @@ class ProgramController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus program'], 500);
         }
+    }
+
+    private function syncLmsData($programId, Request $request)
+    {
+        // 1. Sync Curriculum
+        if ($request->filled('lms_curriculum_json')) {
+            $sectionsData = json_decode($request->lms_curriculum_json, true) ?? [];
+            
+            // Delete old data (simpler than complex tracking for this nested structure)
+            $existingSectionIds = \App\Models\CourseSection::where('program_id', $programId)->pluck('id');
+            \App\Models\CourseLesson::whereIn('section_id', $existingSectionIds)->delete();
+            \App\Models\CourseSection::where('program_id', $programId)->delete();
+
+            $sectionOrder = 1;
+            foreach ($sectionsData as $idx => $sec) {
+                // If the section is empty, it might still have title
+                if (empty($sec['title'])) continue;
+                
+                $section = \App\Models\CourseSection::create([
+                    'program_id' => $programId,
+                    'title' => $sec['title'],
+                    'order' => $sectionOrder++
+                ]);
+
+                if (isset($sec['lessons']) && is_array($sec['lessons'])) {
+                    $lessonOrder = 1;
+                    foreach ($sec['lessons'] as $les) {
+                        if (empty($les['title'])) continue;
+                        
+                        \App\Models\CourseLesson::create([
+                            'section_id' => $section->id,
+                            'title' => $les['title'],
+                            'type' => $les['type'] ?? 'video',
+                            'video_url' => $les['video_url'] ?? null,
+                            'content' => $les['content'] ?? null,
+                            'order' => $lessonOrder++
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // 2. Sync Assignments
+        if ($request->filled('lms_assignment_json')) {
+            $assignmentsData = json_decode($request->lms_assignment_json, true) ?? [];
+            
+            \App\Models\CourseAssignment::where('program_id', $programId)->delete();
+            
+            foreach ($assignmentsData as $asg) {
+                if (empty($asg['title'])) continue;
+
+                \App\Models\CourseAssignment::create([
+                    'program_id' => $programId,
+                    'type' => $asg['type'] ?? 'post-test',
+                    'title' => $asg['title'],
+                    'description' => $asg['description'],
+                    'allowed_extensions' => $asg['allowed_extensions'] ?? 'pdf,zip,rar',
+                    'due_date' => !empty($asg['due_date'])
+                        ? $asg['due_date'] . ' 23:59:59'
+                        : null,
+                    'passing_score' => $asg['passing_score'] ?? 70,
+                ]);
+            }
+        }
+    }
+
+    private function syncProgramApprovalFromAdmin(int $programId, array $data, Request $request): void
+    {
+        $instructorId = $data['instructor_id'] ?? null;
+
+        if (!$instructorId) {
+            DB::table('program_approvals')
+                ->where('program_id', $programId)
+                ->delete();
+            return;
+        }
+
+        $payload = [
+            'program_id' => $programId,
+            'instructor_id' => $instructorId,
+            'title' => $data['program'] ?? null,
+            'description' => $data['description'] ?? null,
+            'category' => $data['category'] ?? null,
+            'type' => $data['type'] ?? null,
+            'price' => $data['price'] ?? 0,
+            'available_slots' => $data['quota'] ?? null,
+            'province' => $data['province'] ?? null,
+            'city' => $data['city'] ?? null,
+            'district' => $data['district'] ?? null,
+            'village' => $data['village'] ?? null,
+            'full_address' => $data['full_address'] ?? null,
+            'start_date' => $data['start_date'] ?? null,
+            'start_time' => $data['start_time'] ?? null,
+            'end_date' => $data['end_date'] ?? null,
+            'end_time' => $data['end_time'] ?? null,
+            'zoom_link' => $data['zoom_link'] ?? null,
+            'image' => $data['image'] ?? null,
+            'tools' => $data['tools'] ?? null,
+            'materials' => $data['learning_materials'] ?? null,
+            'benefits' => $data['benefits'] ?? null,
+            'status' => 'approved',
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+            'rejection_reason' => null,
+            'rejected_at' => null,
+            'lms_curriculum_json' => $request->lms_curriculum_json ?? null,
+            'lms_assignment_json' => $request->lms_assignment_json ?? null,
+            'updated_at' => now(),
+        ];
+
+        $existing = DB::table('program_approvals')
+            ->where('program_id', $programId)
+            ->first();
+
+        if ($existing) {
+            DB::table('program_approvals')
+                ->where('program_id', $programId)
+                ->update($payload);
+            return;
+        }
+
+        $payload['created_at'] = now();
+        DB::table('program_approvals')->insert($payload);
     }
 }

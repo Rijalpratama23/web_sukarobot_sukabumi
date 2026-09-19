@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use Illuminate\Support\Facades\Storage;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -54,5 +56,59 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the user's avatar URL.
+     * Accessible as $user->avatar_url
+     *
+     * @return string
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        $defaultAvatar = asset('assets/elearning/client/img/default-avatar.jpeg');
+
+        $value = $this->attributes['avatar'] ?? null;
+
+        if (!$value) {
+            return $defaultAvatar;
+        }
+
+        // If it's a valid URL, return it directly
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+
+        // Check availability in various locations
+        if (file_exists(public_path($value))) {
+            return asset($value);
+        }
+
+        if (file_exists(public_path('storage/' . $value))) {
+            return asset('storage/' . $value);
+        }
+
+        if (file_exists(storage_path('app/public/' . $value))) {
+            return asset('storage/' . $value);
+        }
+
+        // If file physically missing, return default
+        return $defaultAvatar;
+    }
+
+    /**
+     * Relation to Course Progresses
+     */
+    public function progresses()
+    {
+        return $this->hasMany(\App\Models\CourseProgress::class, 'user_id');
+    }
+
+    /**
+     * Relation to Course Submissions
+     */
+    public function courseSubmissions()
+    {
+        return $this->hasMany(\App\Models\CourseSubmission::class, 'user_id');
     }
 }

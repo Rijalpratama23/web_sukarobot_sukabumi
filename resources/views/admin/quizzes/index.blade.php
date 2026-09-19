@@ -1,100 +1,68 @@
-@extends('admin.layouts.app')
+@extends('panel.layouts.app')
 
-@section('title', 'Tugas/Postest')
+@section('title', 'Manajemen Tugas Akhir')
 
 @section('content')
-    <div class="container px-6 mx-auto">
-        <!-- Page Header -->
-        <div class="my-6">
-            <div class="flex items-start justify-between">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Tugas/Postest</h2>
-                <a href="{{ route('admin.quizzes.create') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Buat Tugas/Postest
-                </a>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
+        <div class="container px-6 py-6 mx-auto max-w-7xl">
+            <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Tugas Akhir</h1>
+                    <p class="mt-1 text-sm text-slate-500">Pilih program kursus untuk menilai tugas akhir siswa.</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200">
+                    Total Kursus: {{ $programs->count() }}
+                </div>
             </div>
-        </div>
 
-        <!-- Quizzes Table -->
-        <div class="w-full mb-8 overflow-hidden rounded-lg shadow-md dark:bg-gray-800">
-            <div class="w-full overflow-x-auto">
-                <table class="w-full whitespace-no-wrap">
-                    <thead>
-                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">Judul</th>
-                            <th class="px-4 py-3">Instruktur</th>
-                            <th class="px-4 py-3">Program</th>
-                            <th class="px-4 py-3">Jumlah Pertanyaan</th>
-                            <th class="px-4 py-3">Total Respon</th>
-                            <th class="px-4 py-3">Tanggal Dibuat</th>
-                            <th class="px-4 py-3">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @forelse($quizzes as $quiz)
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3">
-                                <div class="flex items-center text-sm">
+            @if($programs->isEmpty())
+                <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
+                        <svg class="h-7 w-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-700">Belum ada program dengan tugas akhir.</p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($programs as $program)
+                        @php
+                            $programImage = $program->image
+                                ? (str_starts_with($program->image, 'images/')
+                                    ? asset($program->image)
+                                    : asset('storage/' . $program->image))
+                                : asset('assets/elearning/client/img/home1.jpeg');
+                            $detailUrl = route('admin.programs.lms.submissions.index', ['program' => $program->id]);
+                        @endphp
+                        <a href="{{ $detailUrl }}" class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                            <div class="h-36 w-full bg-cover bg-center" style="background-image: url('{{ $programImage }}');"></div>
+                            <div class="p-5">
+                                <div class="flex items-start justify-between gap-3">
                                     <div>
-                                        <p class="font-semibold">{{ $quiz['title'] }}</p>
+                                        <h2 class="text-base font-bold text-slate-900 group-hover:text-blue-600">{{ $program->program }}</h2>
+                                        <p class="mt-1 text-xs font-semibold text-slate-500">Instruktur: {{ $program->instructor_name ?? 'N/A' }}</p>
                                     </div>
                                 </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm">{{ $quiz['instructor'] }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $quiz['program'] }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $quiz['total_questions'] }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $quiz['total_responses'] }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $quiz['created_at'] }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-4 text-sm">
-                                    <a href="{{ route('admin.quizzes.show', $quiz['id']) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Lihat</a>
-                                    <a href="{{ route('admin.quizzes.edit', $quiz['id']) }}" class="text-green-600 hover:text-green-800 dark:text-green-400">Edit</a>
-                                    <button @click="deleteQuiz({{ $quiz['id'] }})" class="text-red-600 hover:text-red-800 dark:text-red-400">Hapus</button>
+
+                                <div class="mt-4 grid grid-cols-2 gap-3 text-xs font-semibold text-slate-600">
+                                    <div class="rounded-xl bg-slate-50 px-3 py-2">
+                                        <p class="text-[11px] uppercase text-slate-400">Dikumpulkan</p>
+                                        <p class="mt-1 text-sm font-bold text-slate-800">{{ $program->submission_count }}</p>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                Belum ada tugas/postest. <a href="{{ route('admin.quizzes.create') }}" class="text-purple-600 hover:text-purple-800 dark:text-purple-400">Buat tugas/postest pertama</a>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Pagination Section -->
-            @include('components.pagination', ['items' => $quizzes ?? null])
+
+                                <div class="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-blue-600">
+                                    Lihat Submisi
+                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
-
-    <script>
-        function deleteQuiz(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus tugas/postest ini?')) return;
-
-            fetch(`{{ url('admin/quizzes') }}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + (result.message || 'Terjadi kesalahan'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat menghapus data');
-            });
-        }
-    </script>
 @endsection
-

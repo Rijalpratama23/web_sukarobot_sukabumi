@@ -11,46 +11,36 @@ class QuizController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get all quizzes from database with pagination (5 per page)
-        $quizzes = DB::table('quizzes')
-            ->leftJoin('data_programs', 'quizzes.program_id', '=', 'data_programs.id')
-            ->leftJoin('data_trainers', 'quizzes.instructor_id', '=', 'data_trainers.id')
+        $programs = DB::table('data_programs')
+            ->join('lms_assignments', 'lms_assignments.program_id', '=', 'data_programs.id')
+            ->leftJoin('data_trainers', 'data_programs.instructor_id', '=', 'data_trainers.id')
+            ->leftJoin('lms_submissions', 'lms_submissions.assignment_id', '=', 'lms_assignments.id')
+            ->where(function ($query) {
+                $query->where('lms_assignments.type', 'post-test')
+                    ->orWhereNull('lms_assignments.type');
+            })
             ->select(
-                'quizzes.*',
-                'data_programs.program as program_name',
-                'data_trainers.nama as instructor_name'
+                'data_programs.id',
+                'data_programs.program',
+                'data_programs.image',
+                'data_programs.slug',
+                'data_trainers.nama as instructor_name',
+                DB::raw('COUNT(DISTINCT lms_assignments.id) as posttest_count'),
+                DB::raw('COUNT(DISTINCT lms_submissions.id) as submission_count')
             )
-            ->orderBy('quizzes.created_at', 'desc')
-            ->paginate(5);
+            ->groupBy(
+                'data_programs.id',
+                'data_programs.program',
+                'data_programs.image',
+                'data_programs.slug',
+                'data_trainers.nama'
+            )
+            ->orderBy('data_programs.program')
+            ->get();
 
-        // Transform data after pagination
-        $quizzes->getCollection()->transform(function($quiz) {
-            // Get total questions count
-            $totalQuestions = DB::table('quiz_questions')
-                ->where('quiz_id', $quiz->id)
-                ->count();
-
-            // Get total responses count
-            $totalResponses = DB::table('quiz_responses')
-                ->where('quiz_id', $quiz->id)
-                ->count();
-
-            return [
-                'id' => $quiz->id,
-                'title' => $quiz->title,
-                'instructor' => $quiz->instructor_name ?? 'N/A',
-                'program' => $quiz->program_name ?? 'N/A',
-                'type' => $quiz->type ?? 'Postest',
-                'status' => $quiz->status ?? 'draft',
-                'total_questions' => $totalQuestions,
-                'total_responses' => $totalResponses,
-                'created_at' => $quiz->created_at ? date('Y-m-d', strtotime($quiz->created_at)) : '-'
-            ];
-        });
-
-        return view('admin.quizzes.index', compact('quizzes'));
+        return view('admin.quizzes.index', compact('programs'));
     }
 
     /**

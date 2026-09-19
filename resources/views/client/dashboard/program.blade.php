@@ -1,4 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('assets/elearning/client/js/dashboard/program.js') }}"></script>
 
 @extends('client.layouts.dashboard')
 
@@ -14,12 +15,12 @@
 
           <!-- Scrollable Container -->
           <div id="program-nav" class="flex overflow-x-auto gap-2 scrollbar-hide snap-x">
-              <button class="px-4 py-2 text-sm font-medium rounded-full bg-blue-500 text-white whitespace-nowrap snap-start shrink-0">Semua Program</button>
-              <button class="px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0">Kursus</button>
-              <button class="px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0">Pelatihan</button>
-              <button class="px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0">Sertifikasi</button>
-              <button class="px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0">Outing Class</button>
-              <button class="px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0">Outboard</button>
+              <button data-filter="Semua Program" class="filter-btn px-4 py-2 text-sm font-medium rounded-full bg-blue-500 text-white whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Semua Program</button>
+              <button data-filter="Kursus" class="filter-btn px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Kursus</button>
+              <button data-filter="Pelatihan" class="filter-btn px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Pelatihan</button>
+              <button data-filter="Sertifikasi" class="filter-btn px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Sertifikasi</button>
+              <button data-filter="Outing Class" class="filter-btn px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Outing Class</button>
+              <button data-filter="Outboard" class="filter-btn px-4 py-2 text-sm font-medium rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap snap-start shrink-0 transition-colors duration-200 cursor-pointer">Outboard</button>
           </div>
 
           <!-- Right Arrow -->
@@ -37,117 +38,77 @@
               scrollbar-width: none;
           }
       </style>
-
-      <script>
-          document.addEventListener('DOMContentLoaded', () => {
-              const scrollContainer = document.getElementById('program-nav');
-              const leftBtn = document.getElementById('scroll-left');
-              const rightBtn = document.getElementById('scroll-right');
-
-              if(scrollContainer && leftBtn && rightBtn) {
-                  const checkScroll = () => {
-                      // Show/hide left button
-                      if (scrollContainer.scrollLeft > 0) {
-                          leftBtn.classList.remove('opacity-0', 'pointer-events-none');
-                          leftBtn.classList.remove('hidden'); // ensure it's visible if we removed hidden class manually
-                      } else {
-                          leftBtn.classList.add('opacity-0', 'pointer-events-none');
-                      }
-
-                      // Show/hide right button
-                      if (scrollContainer.scrollLeft < (scrollContainer.scrollWidth - scrollContainer.clientWidth - 10)) {
-                          rightBtn.classList.remove('opacity-0', 'pointer-events-none');
-                      } else {
-                          rightBtn.classList.add('opacity-0', 'pointer-events-none');
-                      }
-                  };
-
-                  leftBtn.addEventListener('click', () => {
-                      scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
-                  });
-
-                  rightBtn.addEventListener('click', () => {
-                      scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
-                  });
-
-                  scrollContainer.addEventListener('scroll', checkScroll);
-                  
-                  // Initial check
-                  checkScroll();
-                  // Also check on resize
-                  window.addEventListener('resize', checkScroll);
-              }
-          });
-      </script>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="flex flex-col rounded-xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        @foreach($enrollments as $enrollment)
+          <div class="program-card flex flex-col rounded-xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300" data-category="{{ $enrollment->category }}">
             <div class="relative">
-            <div class="w-full bg-center bg-no-repeat aspect-[16/9] bg-cover" data-alt="Abstract graphic design elements" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEJSQL2WBpLKYVxdc66LfZFXWcBZ4tFSK2YLrw4b9sdXkFl-9gYbt97SdL_uoiwb4FOYkbMml8NbErMXrFFw3nJGik1qzXyaRXkDU_ccXAIhr71b6tE-azDFOVrZJuzFXVpTqUTKDOaHa-REhNqYNnmTrNAp0qtswvW7aH5BRjtGh6SbqPrpl1Q2Lj8vTE-HSlAVI4AEfkX3H7kqq3p73g958N7sXnwCw0Jr2dZsMskU0S6dKdG94V0CA3FpAu5QngCQxvIRSTU7s");'></div>
-            <span class="absolute top-3 left-3 bg-yellow-400/20 text-yellow-800 text-xs font-semibold px-2.5 py-1 rounded-full">Kursus</span>
+              @php
+                  $enrollmentImageUrl = ($enrollment->image && str_starts_with($enrollment->image, 'images/'))
+                      ? asset($enrollment->image) 
+                      : ($enrollment->image ? asset('storage/' . $enrollment->image) : asset('assets/elearning/client/img/home1.jpeg'));
+              @endphp
+              <div class="w-full bg-center bg-no-repeat aspect-[16/9] bg-cover" 
+                   data-alt="{{ $enrollment->program_name }}" 
+                   style='background-image: url("{{ $enrollmentImageUrl }}");'>
+              </div>
+              <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 z-20">
+                  {{ $enrollment->category }}
+              </span>
             </div>
             <div class="flex flex-col p-5 gap-4 flex-1">
-              <h2 class="text-gray-900 text-lg font-bold leading-tight tracking-[-0.015em]">Dasar-dasar Desain Grafis dengan Figma</h2>
-              <p class="text-gray-500 text-sm font-normal leading-normal">Dibeli pada: 15 Okt 2023</p>
-              <div class="w-full">
-              <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-600">Progres</span>
-                <span class="text-sm font-medium text-primary">75%</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-orange-500 h-2 rounded-full" style="width: 75%"></div>
-              </div>
-              </div>
-              <button class="mt-auto flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-orange-500 text-white text-sm font-medium leading-normal hover:bg-orange-600 focus:ring-4 focus:ring-primary/30">
-              <span class="truncate">Lanjutkan Belajar</span>
-              </button>
-            </div>
-          </div>
-          <div class="flex flex-col rounded-xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-          <div class="relative">
-          <div class="w-full bg-center bg-no-repeat aspect-[16/9] bg-cover" data-alt="People collaborating around a table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8Gtm3Pa4CMSXP81AuBjbYpl0Ih3j7KPFCufGVliiH02zWLsM6gCOjDpsxv7Jg3kirPg9zLdKJTLPdjq0Y0J1vJ7asGBgHiq8uF02v4D55KrMQuDaXBnWOOghuLX-51KcpCBePEp8_PoGugahjG9MoLyXLx_2o-ufqmpsJ1gGrptAmyA1ytywyKuIBqj9jr7Nl8NaVuVt0B5w2_BGkNhquCexZbreBFSJ2opwc63XDB85hAQbqcJV_MgjGyq7bn8nlC8RuKXs6cB4");'></div>
-          <span class="absolute top-3 left-3 bg-purple-400/20 text-purple-800 text-xs font-semibold px-2.5 py-1 rounded-full">Pelatihan</span>
-          </div>
-            <div class="flex flex-col p-5 gap-4 flex-1">
-            <h2 class="text-gray-900 text-lg font-bold leading-tight tracking-[-0.015em]">Manajemen Proyek Agile untuk Pemula</h2>
-            <p class="text-gray-500 text-sm font-normal leading-normal">Dibeli pada: 12 Sep 2023</p>
-            <div class="w-full">
-              <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-600">Progres</span>
-                <span class="text-sm font-medium text-primary">40%</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-orange-500 h-2 rounded-full" style="width: 40%"></div>
-              </div>
-            </div>
-            <button class="mt-auto flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-orange-500 text-white text-sm font-medium leading-normal hover:bg-orange-600 focus:ring-4 focus:ring-primary/30">
-            <span class="truncate">Lanjutkan Belajar</span>
-            </button>
-            </div>
-          </div>
-            <div class="flex flex-col rounded-xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-            <div class="relative">  
-              <div class="w-full bg-center bg-no-repeat aspect-[16/9] bg-cover" data-alt="Illustration of a certificate with a seal" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxlEy-QNmZuN4IkQii4igq5qMoK-qPbVtADXDas6HAuJ2KvICP9bj9oOvt6WGgDdt89TVzP8TJfIAplMnjfm_dE9WDrglNNH4DNjghuBwah2qCcGtDP5Zq34edOfyFzlqfb4Q3gWsV_0tuhOlmMPugb9ApANNOet9Ct0bAn7AJLkpbcYUZ23RmMRiP2wyCPlsdtIkQuHATR6TEHF0Lg41ouOeQnT-vI9UqGKU4WeDYpt_uhCE0Iy6IyHYFRaioYcss1-nR-LUOnlA");'></div>
-              <span class="absolute top-3 left-3 bg-green-400/20 text-green-800 text-xs font-semibold px-2.5 py-1 rounded-full">Sertifikasi</span>
-            </div>
-            <div class="flex flex-col p-5 gap-4 flex-1">
-              <h2 class="text-gray-900 text-lg font-bold leading-tight tracking-[-0.015em]">Sertifikasi Digital Marketing Profesional</h2>
-              <p class="text-gray-500 text-sm font-normal leading-normal">Dibeli pada: 05 Agu 2023</p>
-              <div class="w-full">
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm font-medium text-gray-600">Progres</span>
-                  <span class="text-sm font-medium text-green-600">100% Selesai</span>
+              <h2 class="text-gray-900 text-lg font-bold leading-tight tracking-[-0.015em]">{{ $enrollment->program_name }}</h2>
+              <p class="text-gray-500 text-sm font-normal leading-normal">Dibeli pada: {{ \Carbon\Carbon::parse($enrollment->created_at)->translatedFormat('d M Y') }}</p>
+
+              @if($enrollment->is_course_program)
+                <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
+                  <div class="flex items-center justify-between gap-3">
+                    <p class="text-xs font-semibold text-blue-700">Status Kursus: {{ $enrollment->course_status_label }}</p>
+                    <p class="text-xs font-semibold text-blue-700">{{ $enrollment->progress_percent }}%</p>
+                  </div>
+                  <p class="mt-1 text-xs text-blue-600">{{ $enrollment->completed_materials }}/{{ $enrollment->total_materials }} materi selesai</p>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
-                </div>
+              @endif
+
+              <div class="mt-auto space-y-3">
+                  @if($enrollment->can_submit_proof)
+                      <a href="{{ route('client.program.proof', $enrollment->slug) }}" class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-blue-600 text-white text-sm font-medium leading-normal hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 shadow-md shadow-blue-500/20">
+                        <span class="truncate">Kirim Bukti Program</span>
+                      </a>
+                  @endif
+
+                  @if($enrollment->is_course_program && !$enrollment->is_course_completed)
+                    <a href="{{ route('client.program.classroom', $enrollment->slug) }}" class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-blue-600 text-white text-sm font-semibold leading-normal hover:bg-blue-700 transition-colors">
+                      <span class="truncate">Lanjutkan Kursus</span>
+                    </a>
+                  @endif
+
+                  {{-- Tombol Detail Kelas - selalu tampil untuk melihat detail program --}}
+                  <a href="{{ route('client.program.detail', $enrollment->slug) }}" class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-100 text-gray-700 text-sm font-medium leading-normal hover:bg-gray-200 border border-gray-300 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <span class="truncate">Detail Program</span>
+                  </a>
               </div>
-              <button class="mt-auto flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-500 text-white text-sm font-medium leading-normal hover:bg-gray-600 focus:ring-4 focus:ring-gray-300">
-              <span class="truncate">Lihat Detail</span>
-              </button>
             </div>
           </div>
+        @endforeach
+        
+        <div id="no-program-message" class="col-span-1 lg:col-span-2 bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100 {{ $enrollments->isEmpty() ? '' : 'hidden' }}">
+          <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada program</h3>
+          <p class="text-gray-500 mb-8 max-w-sm mx-auto">Anda belum terdaftar di program apapun untuk kategori ini.</p>
+          <a href="{{ route('client.program.semua-kelas') }}" class="inline-flex items-center justify-center bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
+            Jelajahi Program
+          </a>
+        </div>
       </div>
-      <nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0 mt-10 pt-6">
+      <!-- <nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0 mt-10 pt-6">
           <div class="-mt-px flex w-0 flex-1">
             <a class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 " href="#">
             <span class="material-symbols-outlined mr-3 h-5 w-5"><</span>Sebelumnya</a>
@@ -160,6 +121,6 @@
           <div class="-mt-px flex w-0 flex-1 justify-end">
             <a class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 " href="#">Selanjutnya<span class="material-symbols-outlined ml-3 h-5 w-5">></span></a>
           </div>
-      </nav>
+      </nav> -->
     </section>
 @endsection

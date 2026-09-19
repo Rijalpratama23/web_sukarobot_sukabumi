@@ -1,6 +1,7 @@
 @extends('client.main')
 @section('css')
 <link rel="stylesheet" href="{{ asset('assets/elearning/client/css/login/login.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endsection
 
 @section('body')
@@ -55,27 +56,33 @@
           </div>
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" name="password" required placeholder="Masukkan password"
-                   class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95">
+            <div class="relative mt-1">
+                <input type="password" id="password" name="password" required placeholder="Masukkan password"
+                       class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95 pr-10">
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
           </div>
 
-          <button type="button" disabled
-                  class="w-full py-2 bg-gray-400 text-white rounded-xl font-semibold shadow-md cursor-not-allowed opacity-75">
-            Maintenance
+          <button type="submit" id="submit-btn"
+                  class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer">
+            Login
           </button>
         </form>
 
         <div class="mt-6">
-          <a href="#"
-            class="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-xl bg-gray-100 text-gray-400 cursor-not-allowed opacity-75 pointer-events-none">
-            <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 grayscale opacity-50" alt="Google">
-            <span>Maintenance</span>
+          <a href="{{ route('google.login') }}"
+            id="googleLoginBtn"
+            class="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-xl hover:bg-gray-50 transition hover:shadow-md active:scale-95">
+            <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5" alt="Google">
+            <span>Login dengan Google</span>
           </a>
         </div>
 
-        <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600">
-          <a href="{{ url('/reset') }}" class="hover:text-blue-600 transition">Lupa Password?</a>
-          <a href="{{ url('/register') }}" class="hover:text-orange-500 transition">Buat Akun Baru</a>
+        <div class="mt-6 flex flex-row items-center justify-between text-sm text-gray-600">
+          <a href="{{ route('client.reset-password') }}" class="text-blue-600 transition hover:underline">Lupa Password?</a>
+          <a href="{{ url('/register') }}" class="text-blue-600 transition hover:underline">Buat Akun Baru</a>
         </div>
       </div>
     </div>

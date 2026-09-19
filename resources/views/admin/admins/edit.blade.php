@@ -1,199 +1,208 @@
-@extends('admin.layouts.app')
+@extends('panel.layouts.app')
 
 @section('title', 'Edit Admin')
 
 @section('content')
 
-    <div class="container px-6 mx-auto">
+@php
+    $avatarUrl = null;
+    if (!empty($admin->avatar)) {
+        if (str_starts_with($admin->avatar, 'http://') || str_starts_with($admin->avatar, 'https://')) {
+            $avatarUrl = $admin->avatar;
+        } elseif (str_starts_with($admin->avatar, 'images/')) {
+            $avatarUrl = asset($admin->avatar);
+        } else {
+            $avatarUrl = asset('storage/' . $admin->avatar);
+        }
+    }
+@endphp
 
-        <!-- Page Header -->
-        <div class="my-6">
-            <div class="flex items-start justify-between">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Edit Admin</h2>
-                <div class="flex flex-col items-end" style="gap: 16px;">
-                    <a href="{{ route('admin.admins.index') }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Kembali
-                    </a>
-                    <button type="submit" 
-                            form="adminForm"
-                            class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span>Simpan Perubahan</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 sm:py-8">
+    <div class="container px-4 sm:px-6 mx-auto max-w-3xl">
 
         <!-- Form Card -->
-        <div class="w-full mb-8 overflow-hidden rounded-lg shadow-md bg-white dark:bg-gray-800">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none overflow-hidden">
             <form id="adminForm" action="{{ route('admin.admins.update', $admin->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="px-6 py-6 space-y-6">
 
-                    <!-- Status -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="status">
-                            Status <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <select name="status" id="status" required
-                                    class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300">
-                                <option value="aktif" {{ (isset($admin) && $admin->is_active) ? 'selected' : '' }}>Aktif</option>
-                                <option value="non-aktif" {{ (isset($admin) && !$admin->is_active) ? 'selected' : '' }}>Non-Aktif</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
+                <!-- Section 1: Account Information -->
+                <div class="p-5 sm:p-8 border-b border-gray-200 dark:border-gray-700">
+                    @include('panel.partials.forms.section-header', [
+                        'title' => 'Informasi Akun Admin',
+                        'subtitle' => 'Detail dasar akun administrator',
+                        'color' => 'orange',
+                        'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>'
+                    ])
+
+                    <div class="space-y-5">
+                        <!-- Status -->
+                        @include('panel.partials.forms.select', [
+                            'name' => 'status',
+                            'label' => 'Status',
+                            'required' => true,
+                            'value' => old('status', $admin->is_active ? 'aktif' : 'non-aktif'),
+                            'options' => [
+                                'aktif' => '✅ Aktif',
+                                'non-aktif' => '❌ Non-Aktif'
+                            ]
+                        ])
+
+                        <!-- Nama & Username Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @include('panel.partials.forms.input-text', [
+                                'name' => 'name',
+                                'label' => 'Nama Lengkap',
+                                'required' => true,
+                                'value' => old('name', $admin->name),
+                                'placeholder' => 'Masukkan nama admin'
+                            ])
+
+                            @include('panel.partials.forms.input-text', [
+                                'name' => 'username',
+                                'label' => 'Username',
+                                'required' => true,
+                                'value' => old('username', $admin->username),
+                                'placeholder' => 'Masukkan username'
+                            ])
+                        </div>
+
+                        <!-- Email & Phone Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @include('panel.partials.forms.input-text', [
+                                'name' => 'email',
+                                'type' => 'email',
+                                'label' => 'Email',
+                                'required' => true,
+                                'value' => old('email', $admin->email),
+                                'placeholder' => 'admin@example.com',
+                                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>'
+                            ])
+
+                            @include('panel.partials.forms.input-text', [
+                                'name' => 'phone',
+                                'type' => 'tel',
+                                'label' => 'Nomor Telepon',
+                                'required' => true,
+                                'value' => old('phone', $admin->phone),
+                                'placeholder' => '08xxxxxxxxxx',
+                                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>'
+                            ])
                         </div>
                     </div>
-
-                    <!-- Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="name">
-                            Nama <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="name" id="name" required
-                               value="{{ $admin->name ?? '' }}"
-                               placeholder="Masukkan nama"
-                               class="block w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300 dark:placeholder-gray-500">
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="email">
-                            Email <span class="text-red-500">*</span>
-                        </label>
-                        <input type="email" name="email" id="email" required
-                               value="{{ $admin->email ?? '' }}"
-                               placeholder="Masukkan email"
-                               class="block w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300 dark:placeholder-gray-500">
-                    </div>
-
-                    <!-- Phone -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="phone">
-                            Nomor Telepon <span class="text-red-500">*</span>
-                        </label>
-                        <input type="tel" name="phone" id="phone" required
-                               value="{{ $admin->phone ?? '' }}"
-                               placeholder="Masukkan nomor telepon"
-                               class="block w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300 dark:placeholder-gray-500">
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="password">
-                            Password <span class="text-gray-500 text-xs">(Kosongkan jika tidak ingin mengubah)</span>
-                        </label>
-                        <input type="password" name="password" id="password"
-                               placeholder="Masukkan password baru"
-                               class="block w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300 dark:placeholder-gray-500">
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="password_confirmation">
-                            Konfirmasi Password
-                        </label>
-                        <input type="password" name="password_confirmation" id="password_confirmation"
-                               placeholder="Konfirmasi password baru"
-                               class="block w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:focus:border-purple-300 dark:placeholder-gray-500">
-                    </div>
-
-                    <!-- Photo Upload -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Upload Foto
-                        </label>
-                        <div class="flex items-center justify-center w-full">
-                            <label for="photo" 
-                                   class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
-                                   x-data="{ photoPreview: '{{ isset($admin->avatar) && $admin->avatar ? asset($admin->avatar) : null }}' }"
-                                   @dragover.prevent
-                                   @drop.prevent="
-                                       let file = $event.dataTransfer.files[0];
-                                       if (file && file.type.startsWith('image/')) {
-                                           let reader = new FileReader();
-                                           reader.onload = (e) => { photoPreview = e.target.result };
-                                           reader.readAsDataURL(file);
-                                           $refs.photoInput.files = $event.dataTransfer.files;
-                                       }
-                                   ">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6" x-show="!photoPreview">
-                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                        <span class="font-semibold">Seret dan lepas berkas, atau</span> 
-                                        <span class="text-purple-600 hover:text-purple-700 dark:text-purple-400">Telusuri</span>
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        Unggah berkas dalam bentuk: JPG, JPEG, PNG
-                                    </p>
-                                </div>
-                                <div x-show="photoPreview" class="relative w-full h-full p-4">
-                                    <img :src="photoPreview" alt="Preview" class="w-full h-full object-contain rounded-lg">
-                                    <button type="button" 
-                                            @click.stop.prevent="photoPreview = null; $refs.photoInput.value = ''"
-                                            class="absolute top-6 right-6 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <input id="photo" 
-                                       name="photo" 
-                                       type="file" 
-                                       class="hidden" 
-                                       accept="image/*"
-                                       x-ref="photoInput"
-                                       @change="
-                                           let file = $event.target.files[0];
-                                           if (file) {
-                                               let reader = new FileReader();
-                                               reader.onload = (e) => { photoPreview = e.target.result };
-                                               reader.readAsDataURL(file);
-                                           }
-                                       ">
-                            </label>
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- Section 2: Security -->
+                <div class="p-5 sm:p-8 border-b border-gray-200 dark:border-gray-700">
+                    @include('panel.partials.forms.section-header', [
+                        'title' => 'Keamanan',
+                        'subtitle' => 'Ubah password administrator (opsional)',
+                        'color' => 'red',
+                        'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>'
+                    ])
+
+                    <div class="space-y-5">
+                        @include('panel.partials.forms.input-password', [
+                            'name' => 'password',
+                            'label' => 'Password Baru',
+                            'labelHint' => '(Kosongkan jika tidak ingin mengubah)',
+                            'placeholder' => 'Masukkan password baru',
+                            'help' => 'Password minimal 8 karakter'
+                        ])
+
+                        @include('panel.partials.forms.input-password', [
+                            'name' => 'password_confirmation',
+                            'label' => 'Konfirmasi Password Baru',
+                            'placeholder' => 'Konfirmasi password baru'
+                        ])
+                    </div>
+                </div>
+
+                <!-- Section 3: Profile Photo -->
+                <div class="p-5 sm:p-8">
+                    @include('panel.partials.forms.section-header', [
+                        'title' => 'Foto Profil',
+                        'subtitle' => 'Upload foto untuk profil admin',
+                        'color' => 'purple',
+                        'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>'
+                    ])
+
+                    @include('panel.partials.forms.image-cropper', [
+                        'name' => 'cropped_photo',
+                        'id' => 'photo',
+                        'maxSize' => 2,
+                        'currentImage' => $avatarUrl,
+                        'currentImageAlt' => 'Foto ' . $admin->name
+                    ])
+                </div>
+
             </form>
+
+            <!-- Action Buttons -->
+            @include('panel.partials.forms.action-buttons', [
+                'backUrl' => route('admin.admins.index'),
+                'formId' => 'adminForm',
+                'submitText' => 'Simpan Perubahan'
+            ])
         </div>
 
     </div>
-
-@push('scripts')
-<script>
-    // Handle success/error messages from session
-    @if(session('success'))
-        Swal.fire({
-            title: "{{ session('success') }}",
-            icon: "success",
-            draggable: true
-        });
-    @endif
-
-    @if(session('error'))
-        Swal.fire({
-            title: "Error!",
-            text: "{{ session('error') }}",
-            icon: "error"
-        });
-    @endif
-</script>
-@endpush
+</div>
 
 @endsection
 
+@push('scripts')
+<script src="{{ asset('assets/elearning/admin/js/components/image-cropper.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('assets/elearning/admin/js/components/password-validator.js') }}?v={{ time() }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Image Cropper
+    const cropperContainers = document.querySelectorAll('[data-image-cropper]');
+    cropperContainers.forEach(container => {
+        new ImageCropper(container);
+    });
+
+    // Initialize Password Validation (optional for edit)
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('password_confirmation');
+    if (passwordInput && confirmInput) {
+        new PasswordValidator(passwordInput, confirmInput, {
+            minLength: 8,
+            required: false
+        });
+    }
+
+    // Form Validation
+    const form = document.getElementById('adminForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            
+            // Only validate if password is being changed
+            if (password) {
+                if (password.length < 8) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validasi Gagal',
+                        text: 'Password minimal harus 8 karakter!'
+                    });
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validasi Gagal',
+                        text: 'Konfirmasi password tidak cocok!'
+                    });
+                    return;
+                }
+            }
+        });
+    }
+});
+</script>
+@endpush

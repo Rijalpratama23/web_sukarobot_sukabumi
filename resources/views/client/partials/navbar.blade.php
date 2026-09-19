@@ -4,7 +4,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-2">
                 <a href="{{ url('/') }}" class="flex items-center gap-2">
-                    <img src="{{ asset('assets/elearning/client/img/Sukarobot-logo.png') }}" alt="Logo" class="w-60 h-auto">
+                    <img src="{{ asset('assets/elearning/client/img/logo.png') }}" alt="Logo" class="w-50 h-auto">
                 </a>
             </div>
 
@@ -12,30 +12,21 @@
             <div class="nav hidden lg:flex items-center space-x-8">
                 <!-- Home -->
                 <a href="{{ url('/') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Home</a>
+                
+               
 
-                <!-- Program Dropdown -->
-                <!-- <div class="relative group">
-                    <button href="{{ url('/program') }}" class="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
-                        Program <span href="{{ url('/program') }}" class="ml-1"></span>
-                    </button>
-                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="{{ url('/program#filter=kursus') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Kursus</a>
-                        <a href="{{ url('/program#filter=pelatihan') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Pelatihan</a>
-                        <a href="{{ url('/program#filter=sertifikasi') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Sertifikasi</a>
-                        <a href="{{ url('/program#filter=outingclass') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Outing Class</a>
-                        <a href="{{ url('/program#filter=outboard') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Outboard</a>
-                    </div>
-                </div> -->
                 <a href="{{ url('/program') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Program</a>
+                
+                  <a href="https://katalog.sukarobot.com/" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" target="_blank">Katalog</a>
 
                 <!-- Kompetisi Dropdown -->
                 <div class="relative group">
                     <button class="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
                         Kompetisi <span class="ml-1"></span>
                     </button>
-                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="https://brc.sukarobot.com/" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">BRC</a>
-                        <a href="https://src.sukarobot.com/" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">SRC</a>
+                    <div class="absolute left-0 mt-10 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                        <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">BRC</a>
+                        <a href="https://src.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">SRC</a>
                     </div>
                 </div>
 
@@ -44,7 +35,7 @@
                     <button class="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
                         Tentang Sukarobot <span class="ml-1"></span>
                     </button>
-                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                    <div class="absolute left-0 mt-10 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
                         <a href="{{ url('/instruktur') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Instruktur</a>
                         <a href="{{ url('/tentang') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Tentang Kami</a>
                     </div>
@@ -55,8 +46,8 @@
 
                 <!-- Auth Buttons -->
                 @guest
-                    <a href="#" class="bg-gray-400 text-white px-6 py-2.5 rounded-full text-sm font-semibold cursor-not-allowed opacity-75 shadow-none pointer-events-none">
-                        Maintenance
+                    <a href="{{ url('/login') }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30">
+                        Masuk
                     </a>
                 @endguest
 
@@ -64,10 +55,16 @@
                     <!-- User Dropdown -->
                     <div class="relative group">
                         <button class="flex items-center gap-2 focus:outline-none cursor-pointer">
-                            <img src="{{ Auth::user()->avatar ?? asset('assets/elearning/client/img/default-avatar.jpeg') }}" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
+                            <img src="{{ Auth::user()->avatar_url }}" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                            <a href="{{ url('/dashboard') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50">Dashboard</a>
+                            @if(Auth::user()->role === 'instructor')
+                                <a href="{{ route('client.dashboard') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50">Profil Saya</a>
+                                <a href="{{ route('instructor.dashboard') }}?welcome=1" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50">Dashboard Instruktur</a>
+                            @else
+                                <a href="{{ route('client.dashboard') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50">Profil Saya</a>
+                                <a href="{{ route('client.become-instructor') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50">Menjadi Instruktur</a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 cursor-pointer">Logout</button>
@@ -91,30 +88,18 @@
     <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t max-h-[80vh] overflow-y-auto">
         <div class="px-4 py-6 space-y-4 flex flex-col">
             <a href="{{ url('/') }}" class="text-base font-medium text-gray-700 hover:text-blue-600">Home</a>
+            
+             <a href="https://katalog.sukarobot.com/" class="text-base font-medium text-gray-700 hover:text-blue-600">Katalog</a>
 
             <a href="{{ url('/program') }}" class="text-base font-medium text-gray-700 hover:text-blue-600">Program</a>
-            
-            <!-- Mobile Dropdowns -->
-            <!-- <div>
-                <button class="w-full flex justify-between items-center text-base font-medium text-gray-700 hover:text-blue-600 mobile-dropdown-btn">
-                    Program <span>▾</span>
-                </button>
-                <div class="hidden pl-4 space-y-2 mobile-dropdown-content">
-                    <a href="{{ url('/program#filter=kursus') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Kursus</a>
-                    <a href="{{ url('/program#filter=pelatihan') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Pelatihan</a>
-                    <a href="{{ url('/program#filter=sertifikasi') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Sertifikasi</a>
-                    <a href="{{ url('/program#filter=outingclass') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Outing Class</a>
-                    <a href="{{ url('/program#filter=outboard') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Outboard</a>
-                </div>
-            </div> -->
 
             <div>
                 <button class="w-full flex justify-between items-center text-base font-medium text-gray-700 hover:text-blue-600 mobile-dropdown-btn">
                     Kompetisi <span>▾</span>
                 </button>
-                <div class="hidden pl-4 space-y-2 mobile-dropdown-content">
-                    <a href="https://brc.sukarobot.com/" class="block text-sm font-medium text-gray-600 hover:text-blue-600">BRC</a>
-                    <a href="https://src.sukarobot.com/" class="block text-sm font-medium text-gray-600 hover:text-blue-600">SRC</a>
+                <div class="hidden mt-2 pl-4 space-y-2 mobile-dropdown-content">
+                    <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block text-sm font-medium text-gray-600 hover:text-blue-600">BRC</a>
+                    <a href="https://src.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block text-sm font-medium text-gray-600 hover:text-blue-600">SRC</a>
                 </div>
             </div>
 
@@ -122,7 +107,7 @@
                 <button class="w-full flex justify-between items-center text-base font-medium text-gray-700 hover:text-blue-600 mobile-dropdown-btn">
                     Tentang Sukarobot <span>▾</span>
                 </button>
-                <div class="hidden pl-4 space-y-2 mobile-dropdown-content">
+                <div class="hidden mt-2 pl-4 space-y-2 mobile-dropdown-content">
                     <a href="{{ url('/instruktur') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Instruktur</a>
                     <a href="{{ url('/tentang') }}" class="block text-sm font-medium text-gray-600 hover:text-blue-600">Tentang Kami</a>
                 </div>
@@ -131,18 +116,25 @@
             <a href="{{ url('/artikel') }}" class="text-base font-medium text-gray-700 hover:text-blue-600">Artikel</a>
 
             @guest
-                <a href="#" class="w-full bg-gray-400 text-white px-6 py-3 rounded-xl font-semibold text-center block cursor-not-allowed opacity-75 pointer-events-none">
-                    Maintenance
+                <a href="{{ url('/login') }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-center block hover:bg-blue-700 transition-colors">
+                    Masuk
                 </a>
             @endguest
 
             @auth
                 <div class="pt-4 border-t border-gray-300">
                     <div class="flex items-center gap-3 mb-3">
-                        <img src="{{ Auth::user()->avatar ?? asset('assets/elearning/client/img/default-avatar.jpeg') }}" class="w-10 h-10 rounded-full object-cover">
+                        <img src="{{ Auth::user()->avatar_url }}" class="w-10 h-10 rounded-full object-cover">
                         <span class="font-medium text-gray-900">{{ Auth::user()->name }}</span>
                     </div>
-                    <a href="{{ url('/dashboard') }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-center block hover:bg-blue-700 transition-colors mb-3">Dashboard</a>
+                    <a href="{{ route('client.dashboard') }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-center block hover:bg-blue-700 transition-colors mb-3">Profil Saya</a>
+                    
+                    @if(Auth::user()->role === 'instructor')
+                        <a href="{{ route('instructor.dashboard') }}?welcome=1" class="w-full bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-xl font-semibold text-center block hover:bg-blue-50 transition-colors mb-3">Dashboard Instruktur</a>
+                    @else
+                        <a href="{{ route('client.become-instructor') }}" class="w-full bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-xl font-semibold text-center block hover:bg-blue-50 transition-colors mb-3">Menjadi Instruktur</a>
+                    @endif
+                    
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full bg-red-600 text-white px-6 py-3 rounded-xl font-semibold text-center block hover:bg-red-700 transition-colors cursor-pointer">Logout</button>

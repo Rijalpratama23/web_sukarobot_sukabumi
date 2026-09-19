@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\DataTableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class InstructorController extends Controller
 {
@@ -13,43 +15,145 @@ class InstructorController extends Controller
      * Display a listing of the resource.
      * Halaman untuk konfirmasi akun instruktur yang mendaftar
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get instructors from users table with role='instructor'
-        $instructors = DB::table('users')
+        $query = \App\Models\User::query()
             ->where('role', 'instructor')
-            ->select('id', 'name', 'email', 'phone', 'avatar', 'is_active', 'created_at', 'last_login_at')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->select('id', 'name', 'email', 'phone', 'avatar', 'is_active', 'created_at', 'last_login_at');
 
-        // Transform data after pagination
-        $instructors->getCollection()->transform(function($user) {
-            // Check if instructor has data in data_trainers table
-            $trainer = DB::table('data_trainers')
-                ->where('email', $user->email)
-                ->first();
+        $config = [
+            'columns' => [
+                ['key' => 'name', 'label' => 'Nama', 'sortable' => true, 'type' => 'primary'],
+                ['key' => 'email', 'label' => 'Email', 'sortable' => true],
+                ['key' => 'avatar', 'label' => 'Foto', 'sortable' => false, 'type' => 'avatar'],
+                ['key' => 'expertise', 'label' => 'Keahlian', 'sortable' => false],
+                ['key' => 'is_active', 'label' => 'Status', 'sortable' => true, 'type' => 'status'],
+                ['key' => 'actions', 'label' => 'Aksi', 'sortable' => false, 'type' => 'actions'],
+            ],
+            'searchable' => ['name', 'email', 'phone'],
+            'sortable' => ['name', 'email', 'phone', 'is_active', 'created_at'],
+            'actions' => ['edit', 'delete'],
+            'route' => 'admin.instructors',
+            'routeParam' => 'id',
+            'title' => 'Manajemen Instruktur',
+            'entity' => 'instruktur',
+            'createLabel' => 'Tambah Instruktur',
+            'transformer' => function($user) {
+                $trainer = DB::table('data_trainers')
+                    ->where('email', $user->email)
+                    ->first();
 
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email ?? '-',
-                'phone' => $user->phone ?? '-',
-                'expertise' => $trainer->keahlian ?? '-',
-                'status' => $user->is_active ? 'Aktif' : 'Tidak Aktif',
-                'created_at' => $user->created_at ? date('Y-m-d', strtotime($user->created_at)) : '-',
-                'has_trainer_data' => $trainer ? true : false
-            ];
-        });
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email ?? '-',
+                    'phone' => $user->phone ?? '-',
+                    'avatar' => $user->avatar,
+                    'expertise' => $trainer->keahlian ?? '-',
+                    'status' => $user->is_active ? 'Aktif' : 'Tidak Aktif',
+                    'is_active' => $user->is_active,
+                    'created_at' => $user->created_at ? date('Y-m-d', strtotime($user->created_at)) : '-',
+                    'has_trainer_data' => $trainer ? true : false
+                ];
+            },
+        ];
 
-        return view('admin.instructors.index', compact('instructors'));
+        $dataTableService = app(DataTableService::class);
+
+        if ($request->wantsJson()) {
+            return response()->json($dataTableService->json($query, $config, $request));
+        }
+
+        $data = $dataTableService->make($query, $config, $request);
+
+        return view('admin.instructors.index', compact('data'));
     }
+
+
 
     /**
      * Show the form for creating a new instructor.
      */
     public function create()
     {
-        return view('admin.instructors.create');
+        $defaults = ['Web Programming', 'Digital Marketing', 'Microsoft Office', 'Design Grafis'];
+        $existing = DB::table('data_trainers')
+            ->distinct()
+            ->pluck('keahlian')
+            ->filter()
+            ->toArray();
+        
+        $merged = array_values(array_unique(array_merge($defaults, $existing)));
+        sort($merged);
+        
+        // Use associative array so value equals label (not numeric index)
+        $expertiseOptions = array_combine($merged, $merged);
+
+        return view('admin.instructors.create', compact('expertiseOptions'));
+    }
+
+    /**
+     * Display the specified instructor details.
+     */
+    public function show($id)
+    {
+        // Get instructor from users table
+        $instructor = DB::table('users')
+            ->where('id', $id)
+            ->where('role', 'instructor')
+            ->first();
+
+        if (!$instructor) {
+            return redirect()->route('admin.instructors.index')
+                ->with('error', 'Instruktur tidak ditemukan.');
+        }
+
+        // Get instructor application data for documents (CV, KTP, NPWP)
+        $applicationData = DB::table('instructor_applications')
+            ->where('user_id', $id)
+            ->first();
+
+        // Merge application data to instructor object
+        if ($applicationData) {
+            $instructor->cv_path = $applicationData->cv_path ?? null;
+            $instructor->ktp_path = $applicationData->ktp_path ?? null;
+            $instructor->npwp_path = $applicationData->npwp_path ?? null;
+            $instructor->skills = $applicationData->skills ?? null;
+            $instructor->application_id = $applicationData->id ?? null;
+        }
+
+        return view('admin.instructors.show', compact('instructor'));
+    }
+
+    /**
+     * Download private document (CV, KTP, or NPWP) for an instructor - Admin only
+     */
+    public function downloadDocument($id, $type)
+    {
+        // Get application data for the instructor
+        $applicationData = DB::table('instructor_applications')
+            ->where('user_id', $id)
+            ->first();
+        
+        if (!$applicationData) {
+            abort(404, 'Data aplikasi instruktur tidak ditemukan');
+        }
+
+        $pathField = $type . '_path';
+        $validTypes = ['cv', 'ktp', 'npwp'];
+        
+        if (!in_array($type, $validTypes) || empty($applicationData->$pathField)) {
+            abort(404, 'Dokumen tidak ditemukan');
+        }
+
+        $path = $applicationData->$pathField;
+        
+        // Check if file exists in storage
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        return Storage::disk('local')->download($path);
     }
 
     /**
@@ -60,20 +164,28 @@ class InstructorController extends Controller
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username',
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'nullable|string|max:20',
                 'password' => 'required|string|min:8|confirmed',
-                'status' => 'nullable|string|in:Approved,Pending,Rejected',
-                'expertise' => 'nullable|string|max:255',
+                'status' => 'nullable|string|in:Aktif,Non-Aktif',
+                'expertise' => 'required|string|max:100',
                 'job' => 'nullable|string|max:255',
                 'experience' => 'nullable|string|max:255',
+                'bio' => 'nullable|string|max:1000',
                 'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             ]);
 
-            $isActive = ($validated['status'] ?? 'Approved') === 'Approved';
+            // Normalisasi data expertise (Title Case)
+            if (!empty($validated['expertise'])) {
+                $validated['expertise'] = ucwords(strtolower($validated['expertise']));
+            }
+
+            $isActive = ($validated['status'] ?? 'Aktif') === 'Aktif';
 
             $data = [
                 'name' => $validated['name'],
+                'username' => $validated['username'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'password' => Hash::make($validated['password']),
@@ -83,16 +195,31 @@ class InstructorController extends Controller
                 'updated_at' => now(),
             ];
 
-            // Upload photo jika ada (opsional)
-            if ($request->hasFile('photo')) {
+            // Upload photo jika ada (cropped, URL, atau original)
+            $croppedPhoto = $request->input('cropped_photo');
+            
+            if ($croppedPhoto) {
+                // Check if it's an external URL (Google, Facebook, etc.)
+                if (str_starts_with($croppedPhoto, 'http://') || str_starts_with($croppedPhoto, 'https://')) {
+                    // Store URL directly - no download or processing needed
+                    $data['avatar'] = $croppedPhoto;
+                } elseif (str_starts_with($croppedPhoto, 'data:image')) {
+                    // Decode base64 cropped image
+                    $imageData = explode(',', $croppedPhoto);
+                    $decodedImage = base64_decode($imageData[1]);
+                    
+                    // Generate unique filename
+                    $photoName = time() . '_cropped_new.png';
+                    
+                    // Save cropped image to storage
+                    Storage::disk('public')->put('users/' . $photoName, $decodedImage);
+                    $data['avatar'] = 'users/' . $photoName;
+                }
+            } elseif ($request->hasFile('photo')) {
+                // Fallback: Upload original file if no cropped version
                 $photo = $request->file('photo');
                 $photoName = time() . '_' . $photo->getClientOriginalName();
-                $uploadPath = public_path('uploads/instructors');
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath, 0755, true);
-                }
-                $photo->move($uploadPath, $photoName);
-                $data['avatar'] = 'uploads/instructors/' . $photoName;
+                $data['avatar'] = $photo->storeAs('users', $photoName, 'public');
             }
 
             // Add job to users data if provided
@@ -110,6 +237,8 @@ class InstructorController extends Controller
                     'email' => $validated['email'],
                     'telephone' => $validated['phone'] ?? null,
                     'keahlian' => $validated['expertise'] ?? null,
+                    'pengalaman' => $validated['experience'] ?? null,
+                    'bio' => $validated['bio'] ?? null,
                     'status_trainer' => $isActive ? 'Aktif' : 'Tidak Aktif',
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -139,9 +268,10 @@ class InstructorController extends Controller
         $instructorData = [
             'id' => $user->id,
             'name' => $user->name,
+            'username' => $user->username ?? '',
             'email' => $user->email,
             'phone' => $user->phone ?? '',
-            'status' => $user->is_active ? 'Approved' : 'Pending',
+            'status' => $user->is_active ? 'Aktif' : 'Non-Aktif',
             'expertise' => $trainer->keahlian ?? '',
             'job' => $user->job ?? '',
             'experience' => $trainer->pengalaman ?? '', // Ambil dari tabel data_trainers kolom pengalaman
@@ -149,7 +279,15 @@ class InstructorController extends Controller
             'photo' => $user->avatar ?? null,
         ];
 
-        return view('admin.instructors.edit', ['instructor' => (object)$instructorData]);
+        $defaults = ['Web Programming', 'Digital Marketing', 'Microsoft Office', 'Design Grafis'];                                         
+        $existing = DB::table('data_trainers')->distinct()->pluck('keahlian')->filter()->toArray();
+        $merged = array_values(array_unique(array_merge($defaults, $existing)));
+        sort($merged);
+        
+        // Use associative array so value equals label (not numeric index)
+        $expertiseOptions = array_combine($merged, $merged);
+                                                                                                                                            
+        return view('admin.instructors.edit', ['instructor' => (object)$instructorData, 'expertiseOptions' => $expertiseOptions]);
     }
 
     /**
@@ -166,21 +304,28 @@ class InstructorController extends Controller
 
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . $id,
                 'email' => 'required|email|unique:users,email,' . $id,
                 'phone' => 'nullable|string|max:20',
                 'password' => 'nullable|string|min:8|confirmed',
-                'status' => 'nullable|string|in:Approved,Pending,Rejected',
-                'expertise' => 'nullable|string|max:255', // data_trainers.keahlian
+                'status' => 'nullable|string|in:Aktif,Non-Aktif',
+                'expertise' => 'required|string|max:100', // data_trainers.keahlian
                 'job' => 'nullable|string|max:255', // users.job
                 'experience' => 'nullable|string|max:255', // data_trainers.pengalaman
                 'bio' => 'nullable|string', // data_trainers.bio
                 'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             ]);
 
-            $isActive = ($validated['status'] ?? 'Approved') === 'Approved';
+            // Normalisasi data expertise (Title Case)
+            if (!empty($validated['expertise'])) {
+                $validated['expertise'] = ucwords(strtolower($validated['expertise']));
+            }
+
+            $isActive = ($validated['status'] ?? 'Aktif') === 'Aktif';
 
             $data = [
                 'name' => $validated['name'],
+                'username' => $validated['username'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'is_active' => $isActive ? 1 : 0,
@@ -192,25 +337,70 @@ class InstructorController extends Controller
                 $data['password'] = Hash::make($validated['password']);
             }
 
-            // Upload photo jika ada (opsional)
-            if ($request->hasFile('photo')) {
+            // Upload photo jika ada (cropped, URL, atau original)
+            $croppedPhoto = $request->input('cropped_photo');
+            
+            if ($croppedPhoto) {
+                // Check if it's an external URL (Google, Facebook, etc.)
+                if (str_starts_with($croppedPhoto, 'http://') || str_starts_with($croppedPhoto, 'https://')) {
+                    // Delete old photo only if it's a local file (not a URL)
+                    if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                        if (Storage::disk('public')->exists($user->avatar)) {
+                            Storage::disk('public')->delete($user->avatar);
+                        } elseif (file_exists(public_path($user->avatar))) {
+                            try {
+                                unlink(public_path($user->avatar));
+                            } catch (\Exception $e) {
+                                // Ignore error if file not found
+                            }
+                        }
+                    }
+                    
+                    // Store URL directly - no download or processing needed
+                    $data['avatar'] = $croppedPhoto;
+                } elseif (str_starts_with($croppedPhoto, 'data:image')) {
+                    // Delete old photo if exists (menghindari duplikasi storage)
+                    if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                        if (Storage::disk('public')->exists($user->avatar)) {
+                            Storage::disk('public')->delete($user->avatar);
+                        } elseif (file_exists(public_path($user->avatar))) {
+                            try {
+                                unlink(public_path($user->avatar));
+                            } catch (\Exception $e) {
+                                // Ignore error if file not found
+                            }
+                        }
+                    }
+                    
+                    // Decode base64 cropped image
+                    $imageData = explode(',', $croppedPhoto);
+                    $decodedImage = base64_decode($imageData[1]);
+                    
+                    // Generate unique filename
+                    $photoName = time() . '_cropped_' . $id . '.png';
+                    
+                    // Save cropped image to storage
+                    Storage::disk('public')->put('users/' . $photoName, $decodedImage);
+                    $data['avatar'] = 'users/' . $photoName;
+                }
+            } elseif ($request->hasFile('photo')) {
+                // Fallback: Upload original file if no cropped version
                 // Delete old photo if exists
-                if ($user->avatar && file_exists(public_path($user->avatar))) {
-                    try {
-                        unlink(public_path($user->avatar));
-                    } catch (\Exception $e) {
-                        // Ignore error if file not found
+                if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                    if (Storage::disk('public')->exists($user->avatar)) {
+                        Storage::disk('public')->delete($user->avatar);
+                    } elseif (file_exists(public_path($user->avatar))) {
+                        try {
+                            unlink(public_path($user->avatar));
+                        } catch (\Exception $e) {
+                            // Ignore error if file not found
+                        }
                     }
                 }
                 
                 $photo = $request->file('photo');
                 $photoName = time() . '_' . $photo->getClientOriginalName();
-                $uploadPath = public_path('uploads/instructors');
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath, 0755, true);
-                }
-                $photo->move($uploadPath, $photoName);
-                $data['avatar'] = 'uploads/instructors/' . $photoName;
+                $data['avatar'] = $photo->storeAs('users', $photoName, 'public');
             }
 
             // Add job to users data if provided
@@ -255,6 +445,18 @@ class InstructorController extends Controller
     public function destroy($id)
     {
         try {
+            $user = DB::table('users')->where('id', $id)->first();
+
+            // Delete photo file if exists (skip if it's a URL)
+            if ($user && $user->avatar && !str_starts_with($user->avatar, 'http') && file_exists(public_path($user->avatar))) {
+                unlink(public_path($user->avatar));
+            }
+
+            // Hapus data di tabel data_trainers jika email cocok
+            if ($user) {
+                DB::table('data_trainers')->where('email', $user->email)->delete();
+            }
+
             DB::table('users')->where('id', $id)->delete();
             return response()->json(['success' => true, 'message' => 'Instruktur berhasil dihapus']);
         } catch (\Exception $e) {

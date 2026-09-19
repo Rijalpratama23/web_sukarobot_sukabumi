@@ -33,12 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Call API register
-            const response = await fetch("/api/register", {
+            const response = await fetch("/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "X-Requested-With": "XMLHttpRequest"
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify(formData)
             });
@@ -46,15 +47,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Simpan token ke localStorage
-                localStorage.setItem("auth_token", result.data.access_token);
-                localStorage.setItem("user_data", JSON.stringify(result.data.user));
-
-                // Tampilkan pesan sukses
-                alert(result.message || "Akun berhasil dibuat! 🎉");
-
-                // Redirect ke dashboard atau home
-                window.location.href = "/dashboard";
+                // Tampilkan pesan sukses dengan SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil! 🎉',
+                    text: result.message || 'Registrasi berhasil! Selamat datang di Sukarobot',
+                    confirmButtonText: 'Lanjut ke Dashboard',
+                    confirmButtonColor: '#10b981',
+                    allowOutsideClick: false
+                }).then(() => {
+                    // Redirect ke dashboard (session sudah dibuat di server)
+                    window.location.href = result.data.redirect_url || "/dashboard";
+                });
             } else {
                 // Tampilkan error
                 showErrors(result.errors || { general: [result.message] });
@@ -86,5 +90,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
         errorMessages.classList.remove("hidden");
         errorMessages.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    // seek password
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('password_confirmation');
+    const iconPassword = document.getElementById('icon_password');
+    const iconConfirmPassword = document.getElementById('icon_password_confirmation');
+
+
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function (e) {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                iconPassword.classList.remove('fa-eye');
+                iconPassword.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                iconPassword.classList.remove('fa-eye-slash');
+                iconPassword.classList.add('fa-eye');
+            }
+        });
+    }
+
+    if (toggleConfirmPassword) {
+        toggleConfirmPassword.addEventListener('click', function (e) {
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                iconConfirmPassword.classList.remove('fa-eye');
+                iconConfirmPassword.classList.add('fa-eye-slash');
+            } else {
+                confirmPasswordInput.type = 'password';
+                iconConfirmPassword.classList.remove('fa-eye-slash');
+                iconConfirmPassword.classList.add('fa-eye');
+            }
+        });
     }
 });

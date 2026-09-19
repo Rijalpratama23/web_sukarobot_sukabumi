@@ -1,6 +1,7 @@
 @extends('client.main')
 @section('css')
 <link rel="stylesheet" href="{{ asset('assets/elearning/client/css/login/reset.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 
 @section('body')
@@ -22,15 +23,18 @@
         <!-- Step 1: Cari akun -->
         <div id="step-1">
           <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center md:text-left">Lupa Password?</h2>
-          <p class="text-gray-600 mb-6 text-sm text-center md:text-left">Masukkan email atau nomor HP yang terdaftar.</p>
+          <p class="text-gray-600 mb-6 text-sm text-center md:text-left">Masukkan email.</p>
 
           <form id="form-step-1" class="space-y-4">
-            <input type="text" id="identity" name="identity" required
-                   placeholder="Email atau Nomor HP"
+            <input type="hidden" id="reset-email" value="">
+            <input type="email" id="identity" name="identity" required
+                   placeholder="Email"
                    class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95">
-            <button type="submit"
-                    class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95">
-              Cari
+            <p id="error-step-1" class="hidden text-red-500 text-sm"></p>
+            <button type="submit" id="btn-step-1"
+                    class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+              <span id="btn-text-1">Cari</span>
+              <span id="btn-loading-1" class="hidden">Mengirim...</span>
             </button>
           </form>
         </div>
@@ -129,19 +133,7 @@
     </form>
   </div>
 
-  <!-- Popup Success -->
-  <div id="popup-success" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center text-center w-72">
-      <!-- Loading Spinner -->
-      <div id="popup-loading" class="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-      <!-- Icon Centang -->
-      <svg id="popup-check" xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-green-500 hidden mt-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-      </svg>
-      <!-- Pesan -->
-      <p id="popup-text" class="mt-4 text-gray-700 font-medium text-base">Memproses...</p>
-    </div>
-  </div>
+
 </main>
 
 <script src="{{ asset('assets/elearning/client/js/login/reset.js') }}"></script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\DataTableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,22 +12,44 @@ class BroadcastController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get broadcasts from database with pagination (10 per page)
-        $broadcasts = DB::table('broadcasts')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = DB::table('broadcasts')
+            ->select('id', 'message', 'created_at');
 
-        // Transform data after pagination
-        $broadcasts->getCollection()->transform(function($broadcast) {
-            return [
-                'id' => $broadcast->id,
-                'message' => $broadcast->message ?? 'N/A'
-            ];
-        });
+        $data = app(DataTableService::class)->make($query, [
+            'columns' => [
+                ['key' => 'message', 'label' => 'Pesan', 'sortable' => true, 'type' => 'primary'],
+                ['key' => 'date', 'label' => 'Tanggal', 'sortable' => true, 'type' => 'date'],
+                ['key' => 'actions', 'label' => 'Aksi', 'type' => 'actions'],
+            ],
+            'searchable' => ['message'],
+            'sortable' => ['message', 'created_at'],
+            'sortColumns' => [
+                'date' => 'created_at',
+            ],
+            'actions' => ['edit', 'delete'],
+            'route' => 'admin.broadcasts',
+            'title' => 'Manajemen Broadcast',
+            'entity' => 'broadcast',
+            'createLabel' => 'Tambah Broadcast',
+            'searchPlaceholder' => 'Cari pesan broadcast...',
+            'showFilter' => false,
+            'transformer' => function($broadcast) {
+                return [
+                    'id' => $broadcast->id,
+                    'message' => $broadcast->message ?? 'N/A',
+                    'date' => $broadcast->created_at ? date('d F Y H:i', strtotime($broadcast->created_at)) : '-',
+                    'created_at' => $broadcast->created_at
+                ];
+            },
+        ], $request);
 
-        return view('admin.broadcasts.index', compact('broadcasts'));
+        if ($request->wantsJson()) {
+            return response()->json($data);
+        }
+
+        return view('admin.broadcasts.index', compact('data'));
     }
 
     /**

@@ -1,6 +1,8 @@
 @extends('client.main')
 @section('css')
 <link rel="stylesheet" href="{{ asset('assets/elearning/client/css/login/register.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 
 @section('body')
@@ -58,29 +60,39 @@
           <!-- Password -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="password" id="password" required placeholder="Password rahasia (min. 8 karakter)"
-                   class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95">
+            <div class="relative mt-1">
+                <input type="password" name="password" id="password" required placeholder="Password rahasia (min. 8 karakter)"
+                       class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95 pr-10">
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i id="icon_password" class="fa-regular fa-eye"></i>
+                </button>
+            </div>
           </div>
 
           <!-- Confirm Password -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Ulangi password"
-                   class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95">
+            <div class="relative mt-1">
+                <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Ulangi password"
+                       class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95 pr-10">
+                <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i id="icon_password_confirmation" class="fa-regular fa-eye"></i>
+                </button>
+            </div>
           </div>
 
           <!-- Button daftar -->
-          <button type="button" disabled
-                  class="w-full py-2 bg-gray-400 text-white rounded-xl font-semibold shadow-md cursor-not-allowed opacity-75">
-            Maintenance
+          <button type="submit" id="submit-btn"
+                  class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer">
+            Buat Akun
           </button>
         </form>
 
         <div class="mt-6">
-          <a href="#"
-            class="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-xl bg-gray-100 text-gray-400 cursor-not-allowed opacity-75 pointer-events-none">
-            <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 grayscale opacity-50" alt="Google">
-            <span>Maintenance</span>
+          <a href="{{ route('google.login') }}"
+            class="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-xl hover:bg-gray-50 transition hover:shadow-md active:scale-95">
+            <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5" alt="Google">
+            <span>Daftar dengan Google</span>
           </a>
         </div>
 

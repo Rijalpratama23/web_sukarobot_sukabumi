@@ -17,53 +17,35 @@ class GoogleAuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        // Get credentials from env
-        $clientId = env('GOOGLE_CLIENT_ID');
-        $clientSecret = env('GOOGLE_CLIENT_SECRET');
-        $redirectUri = env('GOOGLE_REDIRECT_URI');
-        
-        // Debug: Check if env is loaded (remove after fixing)
-        if (empty($clientId) || empty($clientSecret)) {
-            // Try to get from config as fallback
-            $clientId = $clientId ?: config('services.google.client_id');
-            $clientSecret = $clientSecret ?: config('services.google.client_secret');
-            $redirectUri = $redirectUri ?: config('services.google.redirect');
-        }
+        // Use config() instead of env() - works with cached config on production
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+        $redirectUri = config('services.google.redirect') ?: route('google.callback');
         
         // Validate credentials
         if (empty($clientId) || empty($clientSecret)) {
+            \Log::error('Google OAuth Config Missing', [
+                'client_id' => $clientId ? 'SET' : 'MISSING',
+                'client_secret' => $clientSecret ? 'SET' : 'MISSING',
+            ]);
             return redirect()->route('login')->withErrors([
-                'email' => 'Konfigurasi Google OAuth belum lengkap. Pastikan GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET sudah diisi di file .env'
+                'email' => 'Konfigurasi Google OAuth belum lengkap. Pastikan GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET sudah diisi di file .env dan jalankan php artisan config:cache'
             ]);
         }
         
-        // Build redirect URI if not provided
-        if (empty($redirectUri)) {
-            $redirectUri = route('google.callback');
-        }
-        
-        // Ensure config is loaded
-        config([
-            'services.google.client_id' => $clientId,
-            'services.google.client_secret' => $clientSecret,
-            'services.google.redirect' => $redirectUri,
-        ]);
-        
         try {
-            // Debug log (remove after fixing)
             \Log::info('Google OAuth Redirect', [
-                'client_id' => config('services.google.client_id'),
+                'client_id' => substr($clientId, 0, 20) . '...',
                 'redirect_uri' => $redirectUri,
             ]);
 
             return Socialite::driver('google')
                 ->redirectUrl($redirectUri)
+                ->stateless()
                 ->redirect();
         } catch (\Exception $e) {
-            // Log error
             \Log::error('Google OAuth Redirect Error', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->route('login')->withErrors([
@@ -75,31 +57,45 @@ class GoogleAuthController extends Controller
     /**
      * Handle Google OAuth callback
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         try {
-            // Get redirect URI for callback
-            $redirectUri = env('GOOGLE_REDIRECT_URI') ?: route('google.callback');
+            // Check for error from Google
+            if ($request->has('error')) {
+                $errorMessage = $request->get('error_description', $request->get('error', 'Unknown error'));
+                \Log::error('Google OAuth Error from Google', ['error' => $errorMessage]);
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Google OAuth Error: ' . $errorMessage
+                ]);
+            }
 
-            // Ensure config is loaded for callback too
-            config([
-                'services.google.client_id' => env('GOOGLE_CLIENT_ID'),
-                'services.google.client_secret' => env('GOOGLE_CLIENT_SECRET'),
-                'services.google.redirect' => $redirectUri,
-            ]);
+            // Check if code is present
+            if (!$request->has('code')) {
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Authorization code tidak ditemukan dari Google.'
+                ]);
+            }
 
-            // Debug log (remove after fixing)
-            \Log::info('Google OAuth Config', [
-                'client_id' => config('services.google.client_id'),
-                'redirect' => config('services.google.redirect'),
+            // Get redirect URI from config (works with cached config)
+            $redirectUri = config('services.google.redirect') ?: route('google.callback');
+
+            // Debug log
+            \Log::info('Google OAuth Callback', [
+                'client_id' => config('services.google.client_id') ? 'SET' : 'MISSING',
+                'redirect' => $redirectUri,
+                'has_code' => $request->has('code'),
             ]);
 
             $googleUser = Socialite::driver('google')
                 ->redirectUrl($redirectUri)
+                ->stateless()
                 ->user();
+                
+            // Normalize email to lowercase for consistent matching
+            $normalizedEmail = strtolower(trim($googleUser->email));
             
             // Check if user exists by email
-            $user = DB::table('users')->where('email', $googleUser->email)->first();
+            $user = DB::table('users')->where('email', $normalizedEmail)->first();
             
             if ($user) {
                 // User exists - Login
@@ -145,9 +141,9 @@ class GoogleAuthController extends Controller
                 if ($user->role === 'admin') {
                     return redirect()->route('admin.dashboard');
                 } elseif ($user->role === 'instructor') {
-                    return redirect()->route('instructor.dashboard');
+                    return redirect()->route('client.dashboard.program');
                 } else {
-                    return redirect()->route('client.dashboard');
+                    return redirect()->route('client.dashboard.program');
                 }
             } else {
                 // User doesn't exist - Register
@@ -164,7 +160,7 @@ class GoogleAuthController extends Controller
                 // Create new user
                 $userId = DB::table('users')->insertGetId([
                     'name' => $googleUser->name,
-                    'email' => $googleUser->email,
+                    'email' => $normalizedEmail, // Use normalized email
                     'username' => $username,
                     'password' => Hash::make(Str::random(32)), // Random password since using Google
                     'provider' => 'google',
@@ -176,18 +172,7 @@ class GoogleAuthController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                
-                // Also insert to data_siswas if not exists
-                $existingSiswa = DB::table('data_siswas')->where('email', $googleUser->email)->first();
-                if (!$existingSiswa) {
-                    DB::table('data_siswas')->insert([
-                        'nama_lengkap' => $googleUser->name,
-                        'email' => $googleUser->email,
-                        'status_siswa' => 'Aktif',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
+                // User data is now stored only in users table (data_siswas removed)
                 
                 // Login the newly created user
                 Auth::loginUsingId($userId);

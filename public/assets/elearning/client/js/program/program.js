@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const jumlahKelas = document.querySelector(".jumlah-kelas");
     const navItems = document.querySelectorAll(".nav-item");
 
+    const searchInput = document.getElementById("program-search-input");
+
     if (!container) return;
 
     let cards = Array.from(container.querySelectorAll(".kelas-card"));
@@ -64,10 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Store original index for sorting
     cards.forEach((c, i) => (c.dataset.origIndex = i));
 
-    const updateJumlahKelas = (count) => {
+    const updateJumlahKelas = (count, searchTerm = '') => {
         if (jumlahKelas) {
             const categoryText = categoryNames[activeCategory] || 'program';
-            jumlahKelas.innerHTML = `<span class="w-2 h-8 bg-blue-600 rounded-full inline-block"></span> Menampilkan ${count} ${categoryText}`;
+            let text = `Menampilkan ${count} ${categoryText}`;
+            if (searchTerm) {
+                text += ` (hasil pencarian "${searchTerm}")`;
+            }
+            jumlahKelas.innerHTML = `<span class="w-2 h-8 bg-blue-600 rounded-full inline-block"></span> ${text}`;
         }
     };
 
@@ -95,15 +101,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return cardCategory === normalize(activeCategory);
     }
 
+    function matchesSearch(card, term) {
+        if (!term) return true;
+        const title = normalize(card.querySelector('h3')?.innerText || "");
+        const description = normalize(card.querySelector('p.text-gray-600')?.innerText || "");
+        // Also search in instructor name if desired, but sticking to title/desc for consistency
+        return title.includes(term) || description.includes(term);
+    }
+
     function applySortAndFilter() {
         const sortValue = sortSelect ? sortSelect.value : "newest";
+        const searchTerm = searchInput ? normalize(searchInput.value) : "";
 
-        // Filter by category and availability
+        // Filter by category, availability, and search
         let visibleCards = cards.filter(c => {
             if (!matchesCategory(c)) return false;
+            if (!matchesSearch(c, searchTerm)) return false;
 
             if (sortValue === 'available') {
-                return getSlots(c) > 0;
+                const isRunning = c.dataset.isRunning === 'true';
+                const isFinished = c.dataset.isFinished === 'true';
+                const slots = getSlots(c);
+
+                // Tersedia = Punya slot AND Tidak Sedang Berjalan AND Tidak Selesai (Upcoming)
+                return slots > 0 && !isRunning && !isFinished;
             }
             return true;
         });
@@ -116,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (sortValue === 'oldest') {
                 return da - db;
             } else {
-                return db - da;
+                return db - da; // newest or available (default latest)
             }
         });
 
@@ -125,12 +146,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Show visible cards
         container.innerHTML = "";
-        visibleCards.forEach(c => {
-            container.appendChild(c);
-            c.classList.remove("hidden");
-        });
 
-        updateJumlahKelas(visibleCards.length);
+        if (visibleCards.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full w-full flex flex-col items-center justify-center py-20 text-center">
+                    <div class="relative w-48 h-48 mb-6 animate-bounce" style="animation-duration: 3s;">
+                        <!-- Animated Illustration (Robotic/Tech Theme) -->
+                        <svg class="w-full h-full drop-shadow-xl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Floating Elements -->
+                            <circle cx="100" cy="100" r="80" class="fill-blue-50 animate-pulse" style="animation-duration: 4s;"/>
+                            
+                            <!-- Robot Head / Search Icon Composite -->
+                            <path d="M60 90C60 67.9086 77.9086 50 100 50C122.091 50 140 67.9086 140 90V130C140 141.046 131.046 150 120 150H80C68.9543 150 60 141.046 60 130V90Z" class="fill-white"/>
+                            <rect x="75" y="80" width="15" height="15" rx="7.5" class="fill-blue-200"/>
+                            <rect x="110" y="80" width="15" height="15" rx="7.5" class="fill-blue-200"/>
+                            <path d="M85 115C85 115 90 122 100 122C110 122 115 115 115 115" stroke="#93C5FD" stroke-width="4" stroke-linecap="round"/>
+                            
+                            <!-- Gear Icon (Rotating) -->
+                            <g class="origin-center animate-[spin_10s_linear_infinite]" style="transform-box: fill-box;">
+                                <path d="M160 50L170 45L165 35L155 40L160 50Z" class="fill-orange-400"/>
+                                <circle cx="160" cy="45" r="3" class="fill-white"/>
+                            </g>
+
+                            <!-- Search Magnifier -->
+                            <path d="M130 130L150 150" stroke="#F97316" stroke-width="8" stroke-linecap="round"/>
+                            <circle cx="125" cy="125" r="15" class="stroke-orange-500 fill-white" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Belum Ada Program</h3>
+                    <p class="text-gray-500 max-w-md mx-auto mb-8 text-lg">
+                        Saat ini kami sedang menyiapkan program terbaik untuk kategori ini. <br>Silakan cek kategori lainnya!
+                    </p>
+                </div>
+            `;
+        } else {
+            visibleCards.forEach(c => {
+                container.appendChild(c);
+                c.classList.remove("hidden");
+            });
+        }
+
+        updateJumlahKelas(visibleCards.length, searchTerm ? searchInput.value : '');
     }
 
     // Tab Click Handlers
@@ -154,6 +210,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             btn.classList.remove("text-gray-500", "font-medium");
             btn.classList.add("text-blue-600", "border-b-2", "border-blue-600", "font-bold");
+            btn.classList.add("text-gray-500", "font-medium"); // This line seems redundant/wrong logic in original provided snippet, fixing highlighting here
+            // Correct highlighting logic:
+
+            navItems.forEach(b => {
+                b.classList.remove("text-blue-600", "border-b-2", "border-blue-600", "font-bold");
+                b.classList.add("text-gray-500", "font-medium");
+            });
+            btn.classList.remove("text-gray-500", "font-medium");
+            btn.classList.add("text-blue-600", "border-b-2", "border-blue-600", "font-bold");
+
 
             // Apply filter instantly
             applySortAndFilter();
@@ -164,6 +230,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sort change handler
     if (sortSelect) {
         sortSelect.addEventListener("change", applySortAndFilter);
+    }
+
+    // Search input handler
+    if (searchInput) {
+        searchInput.addEventListener("input", applySortAndFilter);
     }
 
     // Handle browser back/forward

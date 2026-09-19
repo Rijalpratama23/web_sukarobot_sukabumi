@@ -1,327 +1,328 @@
-@extends('admin.layouts.app')
+@extends('panel.layouts.app')
 
 @section('title', 'Dashboard')
 
 @section('content')
-    <!-- Greeting Header -->
-    <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-700 dark:text-gray-200">
-            Hai Admin,
-        </h2>
-        <p class="text-lg text-purple-600 dark:text-purple-400 font-semibold mt-3">
-            SELAMAT DATANG DI PEMBELAJARAN ELEKTRONIK!
-        </p>
+    <div class="max-w-7xl mx-auto">
+
+        <!-- ===== HERO HEADER WITH VERTICAL SPLIT ===== -->
+        <div class="relative">
+            <!-- Orange Top Half -->
+            <div class="bg-orange-500 dark:bg-orange-600 rounded-b-3xl px-4 sm:px-6 lg:px-8 pt-6 pb-28 sm:pb-32">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <p class="text-sm sm:text-base text-orange-100 font-medium mt-1">
+                            Selamat Datang di Dashboard Admin Sukarobot Academy 
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-orange-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 1: RINGKASAN KEUANGAN (Overlapping Cards) ===== -->
+            <div class="px-4 sm:px-6 lg:px-8 -mt-20 sm:-mt-24 relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-white/20 dark:bg-white/10 rounded-xl">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white">Ringkasan Keuangan</h3>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <!-- Card 1: Pendapatan Bulan -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Pendapatan Bulan</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</h4>
+                    </div>
+
+                    <!-- Card 2: Pendapatan Tahun -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Pendapatan Tahun</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">Rp {{ number_format($yearlyRevenue, 0, ',', '.') }}</h4>
+                    </div>
+
+                    <!-- Card 3: Transaksi Bulan -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg shadow-blue-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Transaksi Bulan</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $monthlyTransactions }}</h4>
+                    </div>
+
+                    <!-- Card 4: Transaksi Tahun -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-lg shadow-indigo-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Transaksi Tahun</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $yearlyTransactions }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content below the hero -->
+        <div class="px-4 sm:px-6 lg:px-8 py-6">
+
+            <!-- ===== SECTION 2: STATISTIK PLATFORM ===== -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-xl">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Statistik Platform</h3>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                    <!-- Card: Total User -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg shadow-blue-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total User</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $totalUsers }}</h4>
+                    </div>
+
+                    <!-- Card: Total Instructor -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 text-white shadow-lg shadow-violet-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Instruktur</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $totalInstructors }}</h4>
+                    </div>
+
+                    <!-- Card: Total Program -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-lg shadow-orange-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Program</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $totalPrograms }}</h4>
+                    </div>
+
+                    <!-- Card: Program Aktif -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Program Aktif</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $programsAvailable }}</h4>
+                    </div>
+
+                    <!-- Card: Program Non Aktif -->
+                    <div class="col-span-2 sm:col-span-1 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2.5 rounded-xl bg-gradient-to-br from-red-400 to-red-600 text-white shadow-lg shadow-red-500/30">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Program Non Aktif</p>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ $programsUnavailable }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CHARTS SECTION ===== -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                <!-- Revenue Trend Chart -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-green-100 dark:bg-green-900/40 rounded-xl">
+                                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Tren Pendapatan</h3>
+                        </div>
+                        <select id="revenueYearSelector"
+                            class="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 px-4 py-2.5 transition-all duration-200">
+                            @php
+                                $revenueYears = array_keys($chartData);
+                            @endphp
+                            @foreach($revenueYears as $year)
+                                <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="revenueChart" class="w-full min-h-[280px] sm:min-h-[320px]"></div>
+                </div>
+
+                <!-- Platform Statistics Chart -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-xl">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Statistik Platform</h3>
+                        </div>
+                        @php
+                            $availableYears = array_keys($chartData);
+                            $currentYear = date('Y');
+                            $bestYear = in_array($currentYear, $availableYears) ? $currentYear : ($availableYears[0] ?? date('Y'));
+                        @endphp
+                        <select id="yearSelector"
+                            class="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2.5 transition-all duration-200">
+                            @foreach($availableYears as $year)
+                                <option value="{{ $year }}" {{ $year == $bestYear ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="platformChart" class="w-full min-h-[280px] sm:min-h-[320px]"></div>
+                </div>
+            </div>
+
+            <!-- ===== REVIEWS SECTION ===== -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900/40 rounded-xl">
+                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Ulasan Kursus</h3>
+                    </div>
+                    <select id="ratingSelector"
+                        class="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 px-4 py-2.5 transition-all duration-200">
+                        <option value="all">Semua Rating</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4)</option>
+                        <option value="3">⭐⭐⭐ (3)</option>
+                        <option value="2">⭐⭐ (2)</option>
+                        <option value="1">⭐ (1)</option>
+                    </select>
+                </div>
+
+                <!-- Mobile Cards View -->
+                <div id="reviewsMobileContainer" class="block lg:hidden space-y-4">
+                    <!-- Reviews will be rendered here by JavaScript -->
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden lg:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700/50">
+                            <tr>
+                                <th scope="col" class="px-5 py-4">User</th>
+                                <th scope="col" class="px-5 py-4">Kursus</th>
+                                <th scope="col" class="px-5 py-4">Rating</th>
+                                <th scope="col" class="px-5 py-4">Ulasan</th>
+                                <th scope="col" class="px-5 py-4">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewsDesktopContainer" class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Reviews will be rendered here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <!-- Statistic Cards Grid - 5 Cards -->
-    <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
-        <!-- Card 1: Pengguna -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200">
-            <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Pengguna
-                </p>
-                <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                    {{ number_format($totalUsers ?? 0) }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Card 2: Instruktur -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200">
-            <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Instruktur
-                </p>
-                <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                    {{ number_format($totalInstructors ?? 0) }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Card 3: Total Program -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200">
-            <div class="p-3 mr-4 text-purple-500 bg-purple-100 rounded-full dark:text-purple-100 dark:bg-purple-500">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Total Program
-                </p>
-                <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                    {{ number_format($totalPrograms ?? 0) }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Card 4: Program Tersedia -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200">
-            <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Program Tersedia
-                </p>
-                <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                    {{ number_format($programsAvailable ?? 0) }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Card 5: Program Tidak Tersedia -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200">
-            <div class="p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Program Tidak Tersedia
-                </p>
-                <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                    {{ number_format($programsUnavailable ?? 0) }}
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart Section -->
-    <div class="bg-white rounded-lg shadow-md dark:bg-gray-800 p-6 mb-8">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                Statistik Platform
-            </h3>
-            <!-- Year Selector Dropdown -->
-            <div class="flex items-center gap-2">
-                @php
-                    $availableYears = array_keys($chartData);
-                    $latestYear = max($availableYears);
-                @endphp
-                
-                <label for="yearSelector" class="text-sm font-medium text-gray-600 dark:text-gray-400">Tahun:</label>
-                <select id="yearSelector" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 px-3 py-2">
-                    @foreach($availableYears as $year)
-                        <option value="{{ $year }}" {{ $year == $latestYear ? 'selected' : '' }}>{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div id="platformChart"></div>
-    </div>
-
 @endsection
 
 @push('scripts')
-<script>
-    // Get chart data from backend
-    const chartDataByYear = @json($chartData);
-    const availableYears = Object.keys(chartDataByYear).map(Number);
-    const latestYear = Math.max(...availableYears);
-    
-    let currentChart = null;
 
-    // Function to calculate cumulative data
-    function calculateCumulativeData(monthlyData) {
-        let cumulative = [];
-        let sum = 0;
-        for (let i = 0; i < monthlyData.length; i++) {
-            sum += monthlyData[i];
-            cumulative.push(sum);
-        }
-        return cumulative;
-    }
+    <!-- Chart Utility Scripts (order matters!) -->
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/chart-theme.js') }}"></script>
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/chart-utils.js') }}"></script>
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/platform-chart.js') }}"></script>
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/revenue-chart.js') }}"></script>
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/dashboard-charts.js') }}"></script>
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/reviews.js') }}"></script>
 
-    // Function to render chart for specific year
-    function renderChart(year) {
-        const currentData = chartDataByYear[year];
-        
-        const cumulativeUsers = calculateCumulativeData(currentData.users);
-        const cumulativeInstructors = calculateCumulativeData(currentData.instructors);
-        const cumulativePrograms = calculateCumulativeData(currentData.programs);
+    <!-- Initialize data from PHP -->
+    <script>
+        // Make data available globally
+        window.chartDataByYear = @json($chartData ?? []);
+        window.programReviews = @json($programReviews ?? []);
+    </script>
 
-        const options = {
-            series: [
-                {
-                    name: 'Pengguna',
-                    data: cumulativeUsers
-                },
-                {
-                    name: 'Instruktur',
-                    data: cumulativeInstructors
-                },
-                {
-                    name: 'Total Program',
-                    data: cumulativePrograms
-                }
-            ],
-            chart: {
-                type: 'line',
-                height: 400,
-                toolbar: {
-                    show: true,
-                    tools: {
-                        download: true,
-                        selection: false,
-                        zoom: false,
-                        zoomin: false,
-                        zoomout: false,
-                        pan: false,
-                        reset: false
-                    }
-                },
-                animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 800
-                }
-            },
-            colors: ['#F97316', '#3B82F6', '#A855F7'], // Orange, Blue, Purple
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
-            markers: {
-                size: 5,
-                colors: ['#F97316', '#3B82F6', '#A855F7'],
-                strokeColors: '#fff',
-                strokeWidth: 2,
-                hover: {
-                    size: 7
-                }
-            },
-            xaxis: {
-                categories: currentData.months,
-                labels: {
-                    style: {
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        colors: '#6B7280'
-                    }
-                },
-                axisBorder: {
-                    show: true,
-                    color: '#E5E7EB'
-                },
-                axisTicks: {
-                    show: true,
-                    color: '#E5E7EB'
-                }
-            },
-            yaxis: {
-                title: {
-                    text: 'Total Kumulatif',
-                    style: {
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        color: '#374151'
-                    }
-                },
-                labels: {
-                    style: {
-                        fontSize: '12px',
-                        colors: '#6B7280'
-                    },
-                    formatter: function(val) {
-                        return Math.floor(val);
-                    }
-                }
-            },
-            grid: {
-                borderColor: '#E5E7EB',
-                strokeDashArray: 4,
-                xaxis: {
-                    lines: {
-                        show: true
-                    }
-                },
-                yaxis: {
-                    lines: {
-                        show: true
-                    }
-                }
-            },
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-                fontSize: '14px',
-                fontWeight: 600,
-                labels: {
-                    colors: '#374151'
-                },
-                markers: {
-                    width: 12,
-                    height: 12,
-                    radius: 12
-                },
-                itemMargin: {
-                    horizontal: 15,
-                    vertical: 5
-                }
-            },
-            tooltip: {
-                enabled: true,
-                theme: 'light',
-                x: {
-                    show: true
-                },
-                y: {
-                    formatter: function(value) {
-                        return value + ' Total';
-                    }
-                },
-                marker: {
-                    show: true
-                }
-            },
-            responsive: [{
-                breakpoint: 768,
-                options: {
-                    chart: {
-                        height: 300
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }]
-        };
-
-        // Destroy previous chart if exists
-        if (currentChart) {
-            currentChart.destroy();
-        }
-
-        // Render new chart
-        currentChart = new ApexCharts(document.querySelector("#platformChart"), options);
-        currentChart.render();
-    }
-
-    // Initial render with latest year
-    renderChart(latestYear);
-
-    // Year selector change event
-    document.getElementById('yearSelector').addEventListener('change', function() {
-        const selectedYear = parseInt(this.value);
-        renderChart(selectedYear);
-    });
-</script>
+    <!-- Initialize Dashboard -->
+    <script src="{{ asset('assets/elearning/admin/js/dashboard/dashboard-init.js') }}"></script>
 @endpush
