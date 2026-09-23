@@ -9,6 +9,7 @@
             'outing-class' => 'Outing Class',
             'outboard' => 'Outboard',
         ];
+        $navItems = array_merge(['all' => 'Semua Kelas'], $categoryNames);
         // Hero Content Data
         $heroContent = [
         'all' => [
@@ -50,31 +51,16 @@
                 </svg>
             </button>
 
-            <div class="flex justify-start md:justify-center items-center gap-8 md:gap-12 overflow-x-auto py-4 scrollbar-hide scroll-smooth px-8" id="program-nav">
-                <button type="button" data-filter="all" 
-                   class="nav-item text-sm {{ $currentCategory === 'all' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Semua Kelas
-                </button>
-                <button type="button" data-filter="kursus" 
-                   class="nav-item text-sm {{ $currentCategory === 'kursus' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Kursus
-                </button>
-                <button type="button" data-filter="pelatihan" 
-                   class="nav-item text-sm {{ $currentCategory === 'pelatihan' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Pelatihan
-                </button>
-                <button type="button" data-filter="sertifikasi" 
-                   class="nav-item text-sm {{ $currentCategory === 'sertifikasi' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Sertifikasi
-                </button>
-                <button type="button" data-filter="outing-class" 
-                   class="nav-item text-sm {{ $currentCategory === 'outing-class' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Outing Class
-                </button>
-                <button type="button" data-filter="outboard" 
-                   class="nav-item text-sm {{ $currentCategory === 'outboard' ? 'font-bold text-blue-600 border-b-2 border-blue-600' : 'font-medium text-gray-500 hover:text-gray-900' }} pb-1 whitespace-nowrap transition-colors cursor-pointer text-lg flex-shrink-0">
-                    Outboard
-                </button>
+            <div class="flex justify-start md:justify-center items-center gap-4 sm:gap-6 md:gap-10 lg:gap-12 overflow-x-auto py-3 md:py-4 scrollbar-hide scroll-smooth px-6 md:px-8" id="program-nav">
+                @foreach ($navItems as $key => $label)
+                    <button type="button" data-filter="{{ $key }}"
+                        class="nav-item flex-shrink-0 whitespace-nowrap pb-1 transition-colors cursor-pointer text-xs sm:text-sm
+                            {{ $currentCategory === $key
+                                ? 'font-semibold text-blue-600 border-b-2 border-blue-600'
+                                : 'font-medium text-gray-500 hover:text-gray-900' }}">
+                        {{ $label }}
+                    </button>
+                @endforeach
             </div>
 
             <!-- Right Arrow -->
@@ -94,11 +80,11 @@
         <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-orange-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
 
-        <div class="relative z-10 max-w-2xl mx-auto px-6">
-            <h1 id="hero-title" class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">
+        <div class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6">
+            <h1 id="hero-title" class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-6 leading-tight">
                 {!! $heroContent[$currentCategory]['title'] ?? $heroContent['all']['title'] !!}
             </h1>
-            <p id="hero-description" class="text-gray-600 text-sm mb-8 max-w-2xl mx-auto">
+            <p id="hero-description" class="text-gray-600 text-sm mb-6 sm:mb-8 max-w-2xl mx-auto">
                 {{ $heroContent[$currentCategory]['description'] ?? $heroContent['all']['description'] }}
             </p>
             <div class="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-orange-500 mx-auto rounded-full"></div>
@@ -106,12 +92,12 @@
     </section>
 
     <!-- Filter & Sort Section -->
-    <div class="container mx-auto px-6 mb-8 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-100 pb-6">
+    <div class="container mx-auto px-4 sm:px-6 mb-8 mt-8">
+        <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 border-b border-gray-100 pb-6">
             <!-- Left side -->
             <div class="text-gray-600 font-medium jumlah-kelas flex items-center gap-2">
-                <span class="w-2 h-8 bg-blue-600 rounded-full"></span>
-                Menampilkan {{ $currentCategory === 'all' ? 'semua program' : 'program ' . strtolower($categoryNames[$currentCategory] ?? $currentCategory) }}
+                <span class="w-2 h-8 bg-blue-600 rounded-full flex-shrink-0"></span>
+                <span class="text-sm sm:text-base">Menampilkan {{ $currentCategory === 'all' ? 'semua program' : 'program ' . strtolower($categoryNames[$currentCategory] ?? $currentCategory) }}</span>
             </div>
 
             <!-- Right side: Sort Options & Search -->
@@ -126,9 +112,9 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <div class="flex items-center gap-3 w-full md:w-auto">
                     <span class="text-gray-600 text-sm font-medium whitespace-nowrap">Urutkan:</span>
-                    <div class="relative w-full md:w-auto">
+                    <div class="relative flex-1 min-w-0 md:flex-none md:w-auto">
                         <select id="sort-select" class="w-full md:w-auto appearance-none border border-gray-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white cursor-pointer hover:border-blue-400 transition shadow-sm font-medium text-gray-700">
                             <option value="newest">Terbaru</option>
                             <option value="oldest">Terlama</option>
@@ -143,8 +129,8 @@
     </div>
 
     <!-- Main Content: Card Grid -->
-    <div class="container mx-auto px-6 pb-20">
-        <div class="kelas-container grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <div class="container mx-auto px-4 sm:px-6 pb-20">
+        <div class="kelas-container grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             @forelse ($programs as $program)
                 <!-- Program Card: {{ $program->program }} -->
                 @php
@@ -166,7 +152,7 @@
                         class="h-full flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 {{ $program->available_slots == 0 ? 'grayscale opacity-80 hover:opacity-100' : '' }}">
                         <div class="relative overflow-hidden">
                             <img src="{{ $programImageUrl }}"
-                                class="w-full h-52 object-cover transform group-hover:scale-105 transition duration-500"
+                                class="w-full h-44 sm:h-52 object-cover transform group-hover:scale-105 transition duration-500"
                                 alt="{{ $program->program }}">
                             @if($program->available_slots == 0)
                                 <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
@@ -189,18 +175,18 @@
                                 {{ ucfirst($program->category) }}
                             </div>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
                             <div class="flex items-center gap-1 mb-3">
                                 <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                 <span class="text-sm font-bold text-gray-700">{{ number_format($program->rating, 1) }}</span>
                                 <span class="text-xs text-gray-500">({{ $program->total_reviews }} Review)</span>
                             </div>
 
-                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                 {{ $program->program }}</h3>
-                            <p class="text-gray-600 text-[10px] mb-5 line-clamp-2 leading-relaxed">{{ $program->description }}</p>
+                            <p class="text-gray-600 text-xs mb-4 sm:mb-5 line-clamp-2 leading-relaxed">{{ $program->description }}</p>
                             
-                            <div class="flex items-center gap-4 text-sm text-gray-500 mb-6">
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 mb-5 sm:mb-6">
                                 <div class="flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                     <span>{{ ucfirst($program->type) }}</span>
@@ -211,18 +197,18 @@
                                 </div>
                             </div>
 
-                            <div class="mt-auto pt-5 border-t border-gray-100 flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <img src="{{ $program->instructor_avatar }}" class="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="Instructor">
-                                    <div class="text-xs">
-                                        <p class="font-bold text-gray-900">{{ $program->instructor_name ?? 'Sukarobot' }}</p>
-                                        <p class="text-gray-500">{{ $program->instructor_job ?? 'Mentor' }}</p>
+                            <div class="mt-auto pt-5 border-t border-gray-100 flex flex-wrap justify-between items-center gap-3">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <img src="{{ $program->instructor_avatar }}" class="w-9 h-9 rounded-full border-2 border-white shadow-sm flex-shrink-0" alt="Instructor">
+                                    <div class="text-xs min-w-0">
+                                        <p class="font-bold text-gray-900 truncate">{{ $program->instructor_name ?? 'Sukarobot' }}</p>
+                                        <p class="text-gray-500 truncate">{{ $program->instructor_job ?? 'Mentor' }}</p>
                                     </div>
                                 </div>
                                 @if($program->price > 0)
-                                <span class="text-lg font-bold text-orange-500">Rp {{ number_format($program->price, 0, ',', '.') }}</span>
+                                <span class="text-base sm:text-lg font-bold text-orange-500 whitespace-nowrap">Rp {{ number_format($program->price, 0, ',', '.') }}</span>
                                 @else
-                                <span class="text-lg font-bold text-green-500">Gratis</span>
+                                <span class="text-base sm:text-lg font-bold text-green-500 whitespace-nowrap">Gratis</span>
                                 @endif
                             </div>
                         </div>
@@ -230,9 +216,8 @@
                 </a>
             @empty
                 <!-- No programs found -->
-                <!-- No programs found -->
-                <div class="col-span-full w-full flex flex-col items-center justify-center py-20 text-center">
-                    <div class="relative w-48 h-48 mb-6 animate-bounce" style="animation-duration: 3s;">
+                <div class="col-span-full w-full flex flex-col items-center justify-center py-16 sm:py-20 text-center px-4">
+                    <div class="relative w-36 h-36 sm:w-48 sm:h-48 mb-6 animate-bounce" style="animation-duration: 3s;">
                         <!-- Animated Illustration (Robotic/Tech Theme) -->
                         <svg class="w-full h-full drop-shadow-xl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- Floating Elements -->
@@ -255,8 +240,8 @@
                             <circle cx="125" cy="125" r="15" class="stroke-orange-500 fill-white" stroke-width="4"/>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Belum Ada Program</h3>
-                    <p class="text-gray-500 max-w-md mx-auto mb-8 text-lg">
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Belum Ada Program</h3>
+                    <p class="text-gray-500 max-w-md mx-auto mb-8 text-sm sm:text-lg">
                         Saat ini kami sedang menyiapkan program terbaik untuk kategori ini. <br>Silakan cek kategori lainnya!
                     </p>
                 </div>
