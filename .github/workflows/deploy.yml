@@ -1,196 +1,25 @@
-name: Deploy to CPanel
+name: Deploy to Hosting
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      deployment_type:
-        description: 'Deployment type'
-        required: true
-        default: 'incremental'
-        type: choice
-        options:
-        - incremental
-        - full
-        - force_all_php
-      force_upload:
-        description: 'Force upload all PHP files (if auto-detection fails)'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-        - 'false'
-        - 'true'
 
 jobs:
-  FTP-Deploy-Action:
-    name: FTP-Deploy-Action
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 2  # Get last 2 commits for diff
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'npm'
-
-    - name: Install NPM Dependencies
-      run: npm ci
-
-    - name: Build Vite Assets
-      run: |
-        npm run build
-        echo "✅ Vite build completed - assets ready in public/build/"
-
-    - name: Install FTP tools
-      run: |
-        sudo apt-get update && sudo apt-get install -y lftp
-        echo "✅ lftp installed"
-
-    - name: Determine deployment mode
-      id: deploy_mode
-      run: |
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          DEPLOY_TYPE="${{ github.event.inputs.deployment_type }}"
-        else
-          DEPLOY_TYPE="incremental"
-        fi
-        echo "deployment_type=$DEPLOY_TYPE" >> $GITHUB_OUTPUT
-        echo "🚀 Deployment mode: $DEPLOY_TYPE"
-
-    - name: Full Deploy (Wipe & Upload)
-      id: sync_deploy
-      uses: nick-fields/retry@v2
-      with:
-        timeout_minutes: 30
-        max_attempts: 2
-        retry_wait_seconds: 20
-        command: |
-          echo "🚀 Starting Full Deployment..."
-          echo "📋 Deploying to: public_html"
-          echo "⚡ Excluding: vendor/, .env, .git, sub_domain/ + system files"
-          lftp -e "
-          set ftp:ssl-allow no;
-          set ftp:passive-mode on;
-          set net:timeout 30;
-          set net:max-retries 2;
-          set net:reconnect-interval-base 5;
-          
-          open -u ${{ secrets.SSH_USER }},${{ secrets.SSH_PASS }} ftp://${{ secrets.SSH_HOST }};
-          
-          # Navigate to public_html (EXPLICIT path)
-          cd sukarobot;
-          
-          echo 'Syncing project (excluding vendor, sub_domain, system files)...';
-          
-          # Full Mirror Sync with COMPREHENSIVE excludes
-          # --delete: Delete remote files not in local (keeps server in sync with Git)
-          # 
-          # PROJECT excludes:
-          # --exclude vendor/: Manual upload
-          # --exclude .env: Manual upload  
-          # --exclude sub_domain/: Protected subfolder
-          #
-          # SYSTEM excludes (prevent deletion of server config):
-          # --exclude-glob .bash*: Shell configs
-          # --exclude-glob .cpanel*/: cPanel configs
-          # --exclude-glob .ssh/: SSH keys
-          # --exclude bin/: Server binaries
-          # --exclude etc/: Server configs
-          # --exclude logs/: Server logs
-          mirror --reverse --delete --verbose --parallel=2 \
-            --exclude .git/ \
-            --exclude .gitignore \
-            --exclude .env \
-            --exclude node_modules/ \
-            --exclude vendor/ \
-            --exclude sub_domain/ \
-            --exclude-glob .bash* \
-            --exclude-glob .cagefs* \
-            --exclude-glob .caldav* \
-            --exclude-glob .cl.selector* \
-            --exclude-glob .clwpos* \
-            --exclude-glob .cpanel* \
-            --exclude-glob .cphorde* \
-            --exclude-glob .ftpquota* \
-            --exclude-glob .htpasswds* \
-            --exclude-glob .imunify* \
-            --exclude-glob .koality* \
-            --exclude-glob .lastlogin* \
-            --exclude-glob .myimunify* \
-            --exclude-glob .pearrc* \
-            --exclude-glob .putty* \
-            --exclude-glob .razor* \
-            --exclude-glob .softaculous* \
-            --exclude-glob .spamassassin* \
-            --exclude-glob .ssh* \
-            --exclude-glob .subaccounts* \
-            --exclude-glob .trash* \
-            --exclude bin/ \
-            --exclude data/ \
-            --exclude etc/ \
-            --exclude logs/ \
-            --exclude lscmData/ \
-            --exclude php/ \
-            ./ ./;
-          
-          echo '✅ Full deployment completed!';
-          quit
-          "
-
-    - name: Validate SSH Secrets
-      run: |
-        if [ -z "${{ secrets.SSH_HOST }}" ]; then
-          echo "::error::Missing SSH_HOST secret"
-          exit 1
-        fi
-
-        if [ -z "${{ secrets.SSH_USER }}" ]; then
-          echo "::error::Missing SSH_USER secret"
-          exit 1
-        fi
-
-        if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-          echo "::error::Missing SSH_PRIVATE_KEY secret. Add your private key (including BEGIN/END lines) to GitHub secrets."
-          exit 1
-        fi
-
-        echo "✅ SSH secrets validated"
-
-    - name: Create Storage Symlink on Server
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 65002
-        timeout: 60s
-        command_timeout: 15m
-        script_stop: true
-        script: |
-          cd ~/sukarobot
-          if [ ! -L public/storage ]; then
-            php artisan storage:link --force
-            echo "✅ Storage symlink created"
-          else
-            echo "⏭️ Storage symlink already exists, skipping"
-          fi
-
-    - name: Deployment Summary
-      if: always()
-      run: |
-        if [ "${{ steps.deploy_mode.outputs.deployment_type }}" = "full" ]; then
-          echo "✅ Full deployment completed!"
-          echo "🔄 Future pushes will only deploy changed files."
-        else
-          echo "✅ Selective deployment completed!"
-          echo "⚡ Only changed files were processed - no unnecessary transfers!"
-        fi
-        echo "🎯 Server synchronized with Git repository."
-
-
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd domains/sukarobot.com/web_sukarobot_sukabumi/
+            git pull origin main
