@@ -20,7 +20,7 @@
     <div class="flex-1 overflow-y-auto py-4 text-gray-500 dark:text-gray-400">
         <div class="ml-16">
             <img src="{{ asset('assets/elearning/client/img/logo.png') }}"
-                class="w-auto h-8 md:h-10 object-contain transition-all duration-300 ease-in-out hover:scale-105"
+                class="w-auto h-6 object-contain transition-all duration-300 ease-in-out hover:scale-105"
                 alt="Sukarobot Logo" />
         </div>
 
