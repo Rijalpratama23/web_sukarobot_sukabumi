@@ -106,7 +106,7 @@
 
     <!-- KONTEN KANAN -->
     <div class="lg:col-span-1 space-y-8">
-      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-28">
+      <div class="bg-white p-6 rounded-2xl shadow-xl shadow-[#155DFC]/10 p-6 border border-gray-100 sticky top-28">
         <!-- Poster -->
         <div class="relative overflow-hidden rounded-xl mb-6 group">
           @php
