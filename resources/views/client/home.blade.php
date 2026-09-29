@@ -47,14 +47,22 @@
         <div class="max-w-7xl mx-auto px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
             <!-- Left Content -->
             <div data-aos="fade-right" data-aos-duration="1000">
-                <div class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-6">
-                    🚀 Platform Belajar Skill Masa Depan No.1 di Indonesia
-                </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
-                    Belajar Skill <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Masa Depan</span>
-                    dengan Mudah
-                </h1>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50/80 backdrop-blur-md border border-blue-200/60 shadow-sm shadow-blue-500/10 hover:border-blue-300 transition-all duration-300 mb-6 group cursor-default">
+    <span class="text-base group-hover:scale-110 transition-transform duration-300">🚀</span>
+    <span class="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-700 via-blue-600 to-orange-600 bg-clip-text text-transparent">
+        Platform Belajar Skill Masa Depan No.1 di Indonesia
+    </span>
+</div>
+               <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
+    Belajar Skill 
+    <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">
+        Masa
+    </span>
+    <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">
+        Depan
+    </span>
+    dengan Mudah
+</h1>
                 <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl">
                     Ratusan program untuk pelajar, mahasiswa, guru, dan umum. Tingkatkan kompetensi Anda di berbagai bidang
                     bersama para ahli. Dapatkan Sertifikat Resmi dari Lembaga Terakreditasi dan BNSP.
@@ -110,13 +118,13 @@
         </div>
     </section>
 
-    <!-- Value Proposition Section -->
-    <section class="py-12 bg-white border-b border-gray-100">
+ <!-- Value Proposition Section -->
+    <section class="py-12 bg-gray-50/50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8" data-aos="fade-up">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" data-aos="fade-up">
                 <!-- Item 1 -->
                 <div
-                    class="flex flex-col items-center text-center group hover:-translate-y-1 transition-transform duration-300">
+                    class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div
                         class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +138,7 @@
 
                 <!-- Item 2 -->
                 <div
-                    class="flex flex-col items-center text-center group hover:-translate-y-1 transition-transform duration-300">
+                    class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div
                         class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +153,7 @@
 
                 <!-- Item 3 -->
                 <div
-                    class="flex flex-col items-center text-center group hover:-translate-y-1 transition-transform duration-300">
+                    class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div
                         class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +167,7 @@
 
                 <!-- Item 4 -->
                 <div
-                    class="flex flex-col items-center text-center group hover:-translate-y-1 transition-transform duration-300">
+                    class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div
                         class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +182,7 @@
 
                 <!-- Item 5 -->
                 <div
-                    class="flex flex-col items-center text-center group hover:-translate-y-1 transition-transform duration-300">
+                    class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div
                         class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-pink-600 mb-4 group-hover:bg-pink-600 group-hover:text-white transition-colors">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,8 +198,7 @@
     </section>
 
 
-
-    <!-- Category Navigator Section -->
+<!-- Category Navigator Section -->
     <section id="category" class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-8 lg:px-12">
             <div class="text-center mb-12" data-aos="fade-up">
@@ -202,105 +209,71 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" data-aos="fade-up">
                 <!-- Category 1 -->
                 <a href="{{ url('/program?category=kursus') }}"
-                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 text-center relative overflow-hidden h-48 flex flex-col items-center justify-center">
-                    <div class="category-content transition-all duration-300 transform group-hover:-translate-y-2">
-                        <div
-                            class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">Kursus</h3>
+                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
                     </div>
-                    <div
-                        class="category-desc absolute bottom-0 left-0 w-full p-4 bg-white/95 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <p class="text-sm text-gray-600">Pelajari skill baru dengan kurikulum terstruktur.</p>
-                    </div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">Kursus</h3>
+                    <p class="text-xs text-gray-500">Pelajari skill baru dengan kurikulum terstruktur.</p>
                 </a>
 
                 <!-- Category 2 -->
                 <a href="{{ url('/program?category=pelatihan') }}"
-                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 text-center relative overflow-hidden h-48 flex flex-col items-center justify-center">
-                    <div class="category-content transition-all duration-300 transform group-hover:-translate-y-2">
-                        <div
-                            class="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-orange-500 transition-colors">Pelatihan
-                        </h3>
+                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
                     </div>
-                    <div
-                        class="category-desc absolute bottom-0 left-0 w-full p-4 bg-white/95 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <p class="text-sm text-gray-600">Tingkatkan keahlian praktis Anda.</p>
-                    </div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-1 group-hover:text-orange-500 transition-colors">Pelatihan</h3>
+                    <p class="text-xs text-gray-500">Tingkatkan keahlian praktis Anda.</p>
                 </a>
 
                 <!-- Category 3 -->
                 <a href="{{ url('/program?category=sertifikasi') }}"
-                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 text-center relative overflow-hidden h-48 flex flex-col items-center justify-center">
-                    <div class="category-content transition-all duration-300 transform group-hover:-translate-y-2">
-                        <div
-                            class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-purple-600 transition-colors">
-                            Sertifikasi</h3>
+                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     </div>
-                    <div
-                        class="category-desc absolute bottom-0 left-0 w-full p-4 bg-white/95 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <p class="text-sm text-gray-600">Dapatkan sertifikasi resmi dari BNSP.</p>
-                    </div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">Sertifikasi</h3>
+                    <p class="text-xs text-gray-500">Dapatkan sertifikasi resmi dari BNSP.</p>
                 </a>
 
                 <!-- Category 4 -->
                 <a href="{{ url('/program?category=outing-class') }}"
-                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 text-center relative overflow-hidden h-48 flex flex-col items-center justify-center">
-                    <div class="category-content transition-all duration-300 transform group-hover:-translate-y-2">
-                        <div
-                            class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-green-600 transition-colors">Outing
-                            Class</h3>
+                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
                     </div>
-                    <div
-                        class="category-desc absolute bottom-0 left-0 w-full p-4 bg-white/95 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <p class="text-sm text-gray-600">Belajar seru di luar ruangan.</p>
-                    </div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-1 group-hover:text-green-600 transition-colors">Outing Class</h3>
+                    <p class="text-xs text-gray-500">Belajar seru di luar ruangan.</p>
                 </a>
 
                 <!-- Category 5 -->
                 <a href="{{ url('/program?category=outboard') }}"
-                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 text-center relative overflow-hidden h-48 flex flex-col items-center justify-center">
-                    <div class="category-content transition-all duration-300 transform group-hover:-translate-y-2">
-                        <div
-                            class="w-16 h-16 mx-auto bg-pink-100 rounded-full flex items-center justify-center text-pink-600 mb-4 group-hover:bg-pink-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-pink-600 transition-colors">Outboard
-                        </h3>
+                    class="group category-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 mx-auto bg-pink-100 rounded-full flex items-center justify-center text-pink-600 mb-4 group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
                     </div>
-                    <div
-                        class="category-desc absolute bottom-0 left-0 w-full p-4 bg-white/95 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <p class="text-sm text-gray-600">Eksplorasi teknologi tanpa batas.</p>
-                    </div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-1 group-hover:text-pink-600 transition-colors">Outboard</h3>
+                    <p class="text-xs text-gray-500">Eksplorasi teknologi tanpa batas.</p>
                 </a>
             </div>
         </div>
@@ -705,7 +678,7 @@
     </section>
 
 
-    <!-- Instructors Section -->
+<!-- Instructors Section -->
     <section id="instructor" class="py-20 bg-gray-50 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="text-center mb-14" data-aos="fade-up">
@@ -716,16 +689,17 @@
             </div>
 
             <div class="relative">
-                <div class="swiper instructorSwiper pb-12 px-4">
+                <!-- Tambah pt-6 pb-8 px-4 biar shadow & efek translate tidak terpotong -->
+                <div class="swiper instructorSwiper !pt-6 !pb-8 !px-4 -mx-4 !overflow-visible">
                     <div class="swiper-wrapper">
                         @foreach ($instructors as $instructor)
                             <!-- Instructor {{ $instructor->nama }} -->
                             <div class="swiper-slide h-auto">
                                 <div
-                                    class="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center h-full flex flex-col">
+                                    class="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-center h-full flex flex-col">
                                     <div class="relative w-32 h-32 mx-auto mb-6">
                                         <div
-                                            class="absolute inset-0 bg-blue-100 rounded-full scale-110 group-hover:scale-125 transition-transform  duration-300">
+                                            class="absolute inset-0 bg-blue-100 rounded-full scale-110 group-hover:scale-125 transition-transform duration-300">
                                         </div>
                                         <img src="{{ $instructor->foto }}"
                                             alt="{{ $instructor->nama }}"
