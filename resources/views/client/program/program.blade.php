@@ -155,18 +155,18 @@
                                 class="w-full h-44 sm:h-52 object-cover transform group-hover:scale-105 transition duration-500"
                                 alt="{{ $program->program }}">
                             @if($program->available_slots == 0)
-                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                <div class="absolute inset-0 bg-black/10 flex items-center justify-center z-20">
                                     <span
                                         class="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Kuota
                                         Habis</span>
                                 </div>
                             @elseif($isFinished)
-                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                <div class="absolute inset-0 bg-black/10 flex items-center justify-center z-20">
                                     <span
                                         class="bg-gray-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Selesai</span>
                                 </div>
                             @elseif($isRunning)
-                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                <div class="absolute inset-0 bg-black/10 flex items-center justify-center z-20">
                                     <span
                                         class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Sedang Berjalan</span>
                                 </div>

@@ -11,20 +11,20 @@
             <!-- Desktop Nav -->
             <div class="nav hidden lg:flex items-center space-x-8">
                 <!-- Home -->
-                <a href="{{ url('/') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Home</a>
+                <a href="{{ url('/') }}" class="text-sm font-medium {{ request()->is('/') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Home</a>
                 
                
 
-                <a href="{{ url('/program') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Program</a>
+                <a href="{{ url('/program') }}" class="text-sm font-medium {{ request()->is('program*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Program</a>
                 
-                  <a href="https://katalog.sukarobot.com/" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" target="_blank">Katalog</a>
+                  <a href="https://katalog.sukarobot.com/" class="text-sm font-medium {{ request()->is('katalog') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors" target="_blank">Katalog</a>
 
                 <!-- Kompetisi Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
+                    <button class="flex items-center text-sm font-medium {{ request()->is('kompetisi*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
                         Kompetisi <span class="ml-1"></span>
                     </button>
-                    <div class="absolute left-0 mt-10 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
                         <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">BRC</a>
                         <a href="https://src.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">SRC</a>
                     </div>
@@ -32,17 +32,17 @@
 
                 <!-- Tentang Sukarobot Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
+                    <button class="flex items-center text-sm font-medium {{ request()->is('tentang*') || request()->is('instruktur') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
                         Tentang Sukarobot <span class="ml-1"></span>
                     </button>
-                    <div class="absolute left-0 mt-10 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="{{ url('/instruktur') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Instruktur</a>
-                        <a href="{{ url('/tentang') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Tentang Kami</a>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                        <a href="{{ url('/instruktur') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('instruktur') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Instruktur</a>
+                        <a href="{{ url('/tentang') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('tentang') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Tentang Kami</a>
                     </div>
                 </div>
 
                 <!-- Artikel -->
-                <a href="{{ url('/artikel') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Artikel</a>
+                <a href="{{ url('/artikel') }}" class="text-sm font-medium {{ request()->is('artikel*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Artikel</a>
 
                 <!-- Auth Buttons -->
                 @guest
@@ -52,6 +52,7 @@
                 @endguest
 
                 @auth
+
                     <!-- User Dropdown -->
                     <div class="relative group">
                         <button class="flex items-center gap-2 focus:outline-none cursor-pointer">

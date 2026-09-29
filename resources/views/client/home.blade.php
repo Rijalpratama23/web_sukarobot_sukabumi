@@ -375,7 +375,7 @@
                                             </div>
                                             <!-- Hover Description Overlay -->
                                             <div
-                                                class="absolute inset-0 bg-black/80 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center text-center z-10">
+                                                class="absolute inset-0 bg-black/40 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center text-center z-10">
                                                 <p class="text-white text-sm leading-relaxed line-clamp-4">
                                                     {{ $program->description }}
                                                 </p>
