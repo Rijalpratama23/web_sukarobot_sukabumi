@@ -120,6 +120,9 @@
 					</div>
 
 				</div>
+				
+				
+				
 
 				<!-- KANAN: Sticky Sidebar -->
 				<aside class="lg:col-span-4 xl:col-span-4 lg:mt-8 relative z-20">
@@ -280,4 +283,26 @@
 
 @section('js')
 	<script src="{{ asset('assets/elearning/client/js/program/detail-program.js') }}"></script>
+	<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new Swiper(".testimonialSwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 4500,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: ".testi-next",
+                    prevEl: ".testi-prev",
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 2, 
+                    },
+                },
+            });
+        });
+    </script>
 @endsection
