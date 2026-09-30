@@ -120,11 +120,13 @@
 					</div>
 
 				</div>
+				
+				
+				
 
 				<!-- KANAN: Sticky Sidebar -->
 				<aside class="lg:col-span-4 xl:col-span-4 lg:mt-8 relative z-20">
-					<div class="kursus-card bg-white rounded-2xl border border-purple-100 shadow-xl p-1 lg:sticky lg:top-28">
-						<div class="bg-white rounded-xl p-4">
+					<div class="kursus-card bg-white rounded-2xl shadow-xl shadow-[#155DFC]/10 p-6 lg:sticky lg:top-28">
 							@php
 								$detailImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
 									? asset($program->image)
@@ -281,4 +283,26 @@
 
 @section('js')
 	<script src="{{ asset('assets/elearning/client/js/program/detail-program.js') }}"></script>
+	<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new Swiper(".testimonialSwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 4500,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: ".testi-next",
+                    prevEl: ".testi-prev",
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 2, 
+                    },
+                },
+            });
+        });
+    </script>
 @endsection

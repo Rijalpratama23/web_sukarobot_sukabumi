@@ -608,12 +608,12 @@
                                 <img src="{{ asset('assets/elearning/client/img/logo-src.png') }}" alt="SRC"
                                     class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent lg:bg-gradient-to-r">
+                                    class="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent lg:bg-gradient-to-r">
                                 </div>
                             </div>
                             <div class="p-8 lg:w-1/2 flex flex-col justify-center">
                                 <h3 class="text-3xl font-bold text-gray-900 mb-2">SRC (Sukabumi Robotic Competition)</h3>
-                                <p class="text-blue-600 font-semibold mb-6">Tingkat Nasional</p>
+                                <p class="text-[#155DFC] font-semibold mb-6">Tingkat Nasional</p>
                                 <p class="text-gray-600 mb-8 leading-relaxed text-lg">
                                     SRC merupakan kompetisi tahunan yang luar biasa. Karena kegiatan ini bukan hanya tentang
                                     teknologi dan robot, tetapi juga tentang kolaborasi, inovasi dan semangat untuk belajar.
@@ -637,12 +637,12 @@
                                 <img src="{{ asset('assets/elearning/client/img/logo-brc.png') }}" alt="BRC"
                                     class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent lg:bg-gradient-to-r">
+                                    class="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent lg:bg-gradient-to-r">
                                 </div>
                             </div>
                             <div class="p-8 lg:w-1/2 flex flex-col justify-center">
                                 <h3 class="text-3xl font-bold text-gray-900 mb-2">BRC (Botani Robotic Competition)</h3>
-                                <p class="text-blue-600 font-semibold mb-6">Tingkat Nasional</p>
+                                <p class="text-[#155DFC] font-semibold mb-6">Tingkat Nasional</p>
                                 <p class="text-gray-600 mb-8 leading-relaxed text-lg">
                                     BRC merupakan kompetisi tahunan yang luar biasa. Karena kegiatan ini bukan hanya tentang
                                     teknologi dan robot, tetapi juga tentang kolaborasi, inovasi dan semangat untuk belajar.
