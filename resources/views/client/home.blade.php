@@ -775,6 +775,117 @@
         </div>
     </section>
 
+   <!-- ========================================== -->
+<!-- REVIEW / TESTIMONI SECTION (MARQUEE) -->
+<!-- ========================================== -->
+<section class="py-16 bg-slate-50 overflow-hidden w-full">
+    <div class="max-w-7xl mx-auto px-6 mb-10 text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2">Apa Kata Mereka Tentang Sukarobot?</h2>
+        <p class="text-slate-600 text-sm sm:text-base">Cerita seru dari teman-teman yang sudah belajar merakit robot.</p>
+    </div>
+
+    <div class="w-full overflow-hidden relative">
+        <div class="animate-marquee flex gap-6" id="carouselTrack">
+            
+            <!-- Review 1: Indisya -->
+            <div class="w-[580px] min-w-[580px] bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-start gap-4 shadow-sm">
+                <div class="flex justify-between items-start m-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 text-xl">😊</div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900 m-0">Indisya</h3>
+                            <p class="text-xs text-slate-500 m-0">Murid SukaRobot (9 tahun)</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-200 text-3xl leading-none">❝</div>
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed m-0">
+                    Halo, namaku Indisya (9 tahun). Aku baru pertama kali masuk kelas robotik. Tadinya aku takut susah, ternyata gampang karena diajarin pelan-pelan pakai balok susun (lego). Wah, seru banget pokoknya, mama juga seneng liat hasil robotku.
+                </p>
+            </div>
+
+            <!-- Review 2: Panda -->
+            <div class="w-[580px] min-w-[580px] bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-start gap-4 shadow-sm">
+                <div class="flex justify-between items-start m-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 text-xl">😊</div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900 m-0">Panda</h3>
+                            <p class="text-xs text-slate-500 m-0">Murid SukaRobot (8 tahun)</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-200 text-3xl leading-none">❝</div>
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed m-0">
+                    Suka banget les robot di Sukarobot! Tempatnya asik, banyak temennya. Kemarin bikin robot bentuk mobil balap trs bisa dikontrol pake remot. Kak gurunya juga sabar banget ngajarin kita yang masih pada bingung. Pokoknya seru dan mantap banget deh!
+                </p>
+            </div>
+
+            <!-- Review 3: Anggra -->
+            <div class="w-[580px] min-w-[580px] bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-start gap-4 shadow-sm">
+                <div class="flex justify-between items-start m-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 text-xl">😊</div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900 m-0">Anggra</h3>
+                            <p class="text-xs text-slate-500 m-0">Murid SukaRobot (10 tahun)</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-200 text-3xl leading-none">❝</div>
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed m-0">
+                    Halo, nama aku Anggra, umur 10 tahun. Aku tadinya penasaran gimana caranya bikin robot karena kukira bakal susah banget dan isinya cowok semua. Eh, ternyata seru banget! Aku diajarin cara merakit bentuk robot hewan terus dimasukin program sederhana biar bisa gerak. Kakak pengajarnya baik dan sabar banget jelasinnya ke aku. Senang banget bisa ikut belajar di Sukarobot Academy!
+                </p>
+            </div>
+
+            <!-- Review 4: Caca -->
+            <div class="w-[580px] min-w-[580px] bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-start gap-4 shadow-sm">
+                <div class="flex justify-between items-start m-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 text-xl">😊</div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900 m-0">Caca</h3>
+                            <p class="text-xs text-slate-500 m-0">Murid SukaRobot (8 tahun)</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-200 text-3xl leading-none">❝</div>
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed m-0">
+                    Kemarin aku abis belajar bikin robot capit hewan kepiting di Sukarobot. Lucu banget bisa main capit-capitan kertas! Tadi sempat salah pasang kabel jadi lampunya gak mau nyala, tapi dibantuin sama Kakaknya sampai nyala terang. Asik banget deh!
+                </p>
+            </div>
+
+            <!-- Review 5: Sismita -->
+            <div class="w-[580px] min-w-[580px] bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-start gap-4 shadow-sm">
+                <div class="flex justify-between items-start m-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 text-xl">😊</div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900 m-0">Sismita</h3>
+                            <p class="text-xs text-slate-500 m-0">Murid SukaRobot (8 tahun)</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-200 text-3xl leading-none">❝</div>
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed m-0">
+                    Yey! Robot buatanku bisa jalan sendiri pas dipasang baterai. Seneng banget rasanya! Makasih ya Kakak guru di Sukarobot udah sabar ngajarin aku pegang obeng kecil. Nanti mau ajak temen sekolahku ikutan juga biar seru.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Script JavaScript Wajib untuk Duplikat Track Marquee -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('carouselTrack');
+        if (track) {
+            track.innerHTML += track.innerHTML;
+        }
+    });
+</script>
+
     <!-- Partner Section -->
     <section id="partner" class="py-16 bg-gray-50 border-y border-gray-100 overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 mb-10 text-center">
