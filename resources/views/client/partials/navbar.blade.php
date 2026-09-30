@@ -51,7 +51,7 @@
 
                 @auth
 
-                    <!-- User Dropdown -->
+                    <!-- User Dropdown         -->
                     <div class="relative group">
                         <button class="flex items-center gap-2 focus:outline-none cursor-pointer">
                             <img src="{{ Auth::user()->avatar_url }}" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
