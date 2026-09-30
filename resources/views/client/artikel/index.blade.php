@@ -7,13 +7,22 @@
   <!-- Section Hero -->
   <section class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
     <div class="order-2 md:order-1">
-      <span class="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-4 border border-blue-100">
+      <!-- RoboNews Badge Improved (Modern Glassmorphism) -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/80 backdrop-blur-md border border-blue-200/60 shadow-sm shadow-blue-500/10 hover:border-blue-300 transition-all duration-300 mb-6 group cursor-default">
+        <span class="text-base group-hover:scale-110 transition-transform duration-300">📰</span>
+        <span class="text-xs sm:text-sm font-bold text-blue-600 tracking-wide">
           RoboNews
-      </span>
+        </span>
+      </div>
+
+      <!-- Judul dengan Glow Warna Terpisah & Presisi -->
       <h1 class="text-4xl md:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
         Wawasan Terkini <br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">
-          Dunia Robotika
+        <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">
+          Dunia
+        </span>
+        <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">
+          Robotika
         </span>
       </h1>
       <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">

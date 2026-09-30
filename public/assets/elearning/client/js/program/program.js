@@ -37,31 +37,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Hero Content Data
     const heroContent = {
-        'all': {
-            title: 'Kelas di E-Learning tersedia dari level <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Dasar hingga Profesional</span>',
-            description: 'Tingkatkan kompetensi Anda sesuai kebutuhan industri terkini dengan kurikulum yang terstruktur dan mentor berpengalaman.'
-        },
-        'kursus': {
-            title: 'Tingkatkan keahlianmu dengan berbagai <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Kursus Intensif</span>',
-            description: 'Materi dirancang oleh ahli untuk pemula hingga profesional.'
-        },
-        'pelatihan': {
-            title: 'Ikuti pelatihan praktis untuk <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Mengasah Keterampilan</span>',
-            description: 'Tingkatkan soft skill dan hard skill Anda untuk dunia kerja.'
-        },
-        'sertifikasi': {
-            title: 'Dapatkan pengakuan profesional melalui <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Program Sertifikasi</span>',
-            description: 'Validasi keahlian Anda dengan sertifikat berstandar industri nasional dan internasional.'
-        },
-        'outing-class': {
-            title: 'Belajar di luar kelas dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Pengalaman Langsung</span>',
-            description: 'Kegiatan edukatif yang menyenangkan dan interaktif untuk semua usia.'
-        },
-        'outboard': {
-            title: 'Bangun karakter dan kerjasama tim melalui <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Program Outboard</span>',
-            description: 'Kegiatan luar ruangan yang menantang untuk meningkatkan kepemimpinan dan soliditas tim.'
-        }
-    };
+    'all': {
+        'title': 'Kelas di E-Learning tersedia dari level <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Dasar</span> <span class="inline-block text-gray-900 font-extrabold">hingga</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Profesional</span>',
+        'description': 'Tingkatkan kompetensi Anda sesuai kebutuhan industri terkini dengan kurikulum yang terstruktur dan mentor berpengalaman.'
+    },
+    'kursus': {
+        'title': 'Tingkatkan keahlianmu dengan berbagai <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Kursus</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Intensif</span>',
+        'description': 'Materi dirancang oleh ahli untuk pemula hingga profesional.'
+    },
+    'pelatihan': {
+        'title': 'Ikuti pelatihan praktis untuk <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Mengasah</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Keterampilan</span>',
+        'description': 'Tingkatkan soft skill dan hard skill Anda untuk dunia kerja.'
+    },
+    'sertifikasi': {
+        'title': 'Dapatkan pengakuan profesional melalui <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Program</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Sertifikasi</span>',
+        'description': 'Validasi keahlian Anda dengan sertifikat berstandar industri nasional dan internasional.'
+    },
+    'outing-class': {
+        'title': 'Belajar di luar kelas dengan <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Pengalaman</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Langsung</span>',
+        'description': 'Kegiatan edukatif yang menyenangkan dan interaktif untuk semua usia.'
+    },
+    'outboard': {
+        'title': 'Bangun karakter dan kerjasama tim melalui <br> <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">Program</span> <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">Outboard</span>',
+        'description': 'Kegiatan luar ruangan yang menantang untuk meningkatkan kepemimpinan dan soliditas tim.'
+    }
+};
 
     // Store original index for sorting
     cards.forEach((c, i) => (c.dataset.origIndex = i));

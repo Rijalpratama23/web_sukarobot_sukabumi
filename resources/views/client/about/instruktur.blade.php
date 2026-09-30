@@ -13,11 +13,15 @@
 
     <div class="relative z-10 max-w-4xl mx-auto px-6">
         <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Instruktur <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Profesional & Berpengalaman</span>
-        </h1>
-        <p class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-            Belajar langsung dari para ahli yang siap membimbingmu mencapai potensi terbaik.
-        </p>
+    Instruktur 
+    <span class="inline-block text-blue-600 drop-shadow-[0_0_20px_rgba(37,99,235,0.45)]">
+        Profesional
+    </span> 
+    <span class="inline-block text-gray-900 font-extrabold">&</span> 
+    <span class="inline-block text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">
+        Berpengalaman
+    </span>
+</h1>
         
         <!-- Custom dropdown -->
         <div class="relative w-full max-w-xs mx-auto z-20">
