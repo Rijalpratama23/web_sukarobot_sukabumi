@@ -14,7 +14,7 @@
       <!-- Left mural full -->
       <div class="hidden md:flex w-1/2 relative">
         <!-- Background mural gradient full -->
-        <div class="absolute inset-0 bg-gradient-to-br from-orange-400/30 via-blue-400/20 to-pink-400/20"></div>
+        <div class="absolute inset-0" style="background-color: #096882"></div>
 
         <!-- Ilustrasi -->
         <div class="relative flex items-center justify-center w-full h-full p-8">
@@ -66,7 +66,7 @@
           </div>
 
           <button type="submit" id="submit-btn"
-                  class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer">
+                  class="w-full py-2 bg-orange-500 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer">
             Login
           </button>
         </form>
