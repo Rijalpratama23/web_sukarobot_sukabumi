@@ -611,9 +611,23 @@
                                     class="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent lg:bg-gradient-to-r">
                                 </div>
                             </div>
+<<<<<<< HEAD
                             <div class="p-8 lg:w-1/2 flex flex-col justify-center">
                                 <h3 class="text-3xl font-bold text-gray-900 mb-2">SRC (Sukabumi Robotic Competition)</h3>
                                 <p class="text-[#155DFC] font-semibold mb-6">Tingkat Nasional</p>
+=======
+                            <div class="p-8 lg:w-1/2 flex flex-col justify-center items-start">
+                                <h3 class="text-3xl font-bold text-gray-900 mb-3">SRC (Sukabumi Robotic Competition)</h3>
+                                
+                                <!-- Badge Tingkat Nasional (Same style as Image 3) -->
+                                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/80 backdrop-blur-md border border-blue-200/60 shadow-sm shadow-blue-500/10 mb-6">
+                                    <span class="text-sm">🏆</span>
+                                    <span class="text-xs sm:text-sm font-bold text-blue-600 tracking-wide">
+                                        Tingkat Nasional
+                                    </span>
+                                </div>
+
+>>>>>>> origin/sv_Raja
                                 <p class="text-gray-600 mb-8 leading-relaxed text-lg">
                                     SRC merupakan kompetisi tahunan yang luar biasa. Karena kegiatan ini bukan hanya tentang
                                     teknologi dan robot, tetapi juga tentang kolaborasi, inovasi dan semangat untuk belajar.
@@ -640,24 +654,30 @@
                                     class="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent lg:bg-gradient-to-r">
                                 </div>
                             </div>
-                            <div class="p-8 lg:w-1/2 flex flex-col justify-center">
-                                <h3 class="text-3xl font-bold text-gray-900 mb-2">BRC (Botani Robotic Competition)</h3>
-                                <p class="text-[#155DFC] font-semibold mb-6">Tingkat Nasional</p>
+                            <div class="p-8 lg:w-1/2 flex flex-col justify-center items-start">
+                                <h3 class="text-3xl font-bold text-gray-900 mb-3">BRC (Botani Robotic Competition)</h3>
+                                
+                                <!-- Badge Tingkat Nasional (Same style as Image 3) -->
+                                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/80 backdrop-blur-md border border-blue-200/60 shadow-sm shadow-blue-500/10 mb-6">
+                                    <span class="text-sm">🏆</span>
+                                    <span class="text-xs sm:text-sm font-bold text-blue-600 tracking-wide">
+                                        Tingkat Nasional
+                                    </span>
+                                </div>
                                 <p class="text-gray-600 mb-8 leading-relaxed text-lg">
                                     BRC merupakan kompetisi tahunan yang luar biasa. Karena kegiatan ini bukan hanya tentang
                                     teknologi dan robot, tetapi juga tentang kolaborasi, inovasi dan semangat untuk belajar.
                                     Selain itu hadiah menarik dan penghargaan yang menanti untuk para pemenang!
                                 </p>                                
-                                    <div class="flex items-center">
-                                        <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer"s
-                                            class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg hover:shadow-blue-600/30">
-                                            Daftar Sekarang
-                                        </a>
-                                    </div>
+                                <div class="flex items-center">
+                                    <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer"
+                                        class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg hover:shadow-blue-600/30">
+                                        Daftar Sekarang
+                                    </a>
                                 </div>
                             </div>
                         </div>
-        
+                    </div>
                 </div>
             </div>
 
