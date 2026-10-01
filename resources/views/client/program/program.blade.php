@@ -133,16 +133,37 @@
         <div class="kelas-container grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             @forelse ($programs as $program)
                 <!-- Program Card: {{ $program->program }} -->
-                @php
-                    $programImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
-                        ? asset($program->image) 
-                        : ($program->image ? asset('storage/' . $program->image) : 'https://picsum.photos/400/250?random=' . $program->id);
-                    $now = \Carbon\Carbon::now();
-                    $startDate = \Carbon\Carbon::parse($program->start_date);
-                    $endDate = \Carbon\Carbon::parse($program->end_date);
-                    $isRunning = $now->between($startDate, $endDate);
-                    $isFinished = $now->gt($endDate);
-                @endphp
+               @php
+             // 1. Pemetaan foto cadangan sesuai kategori
+             $categoryDefaults = [
+            'pelatihan'   => asset('assets/elearning/client/img/pelatihan-robotika-static-2.jpg'),
+            'kursus'      => asset('assets/elearning/client/img/ui-ux-static.jpg'),
+            'sertifikasi' => asset('assets/elearning/client/img/default-sertifikasi.jpg'),
+    ];
+
+             // Ambil foto default sesuai kategori program, atau gunakan default-thumbnail.jpg jika kategori tidak cocok
+            $categoryKey = strtolower($program->category);
+            $defaultProgramImg = $categoryDefaults[$categoryKey] ?? asset('assets/elearning/client/img/default-thumbnail.jpg');
+
+            $defaultAvatarImg = 'https://ui-avatars.com/api/?name=' . urlencode($program->instructor_name ?? 'Sukarobot') . '&background=0D8ABC&color=fff';
+
+            // Logika Gambar Banner/Thumbnail Program
+            if ($program->image && str_starts_with($program->image, 'images/')) {
+            $programImageUrl = asset($program->image);
+            } elseif ($program->image) {
+            $programImageUrl = asset('storage/' . $program->image);
+        } else {
+        $programImageUrl = $defaultProgramImg;
+        }
+
+        $instructorAvatarUrl = $program->instructor_avatar ?: $defaultAvatarImg;
+
+       $now = \Carbon\Carbon::now();
+       $startDate = \Carbon\Carbon::parse($program->start_date);
+        $endDate = \Carbon\Carbon::parse($program->end_date);
+        $isRunning = $now->between($startDate, $endDate);
+        $isFinished = $now->gt($endDate);
+        @endphp
                 <a href="{{ route('client.program.detail', $program->slug) }}" class="block group kelas-card"
                     data-category="{{ $program->category }}" data-date="{{ $program->created_at }}"
                     data-slots="{{ $program->available_slots }}"
@@ -152,8 +173,9 @@
                         class="h-full flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 {{ $program->available_slots == 0 ? 'grayscale opacity-80 hover:opacity-100' : '' }}">
                         <div class="relative overflow-hidden">
                             <img src="{{ $programImageUrl }}"
-                                class="w-full h-44 sm:h-52 object-cover transform group-hover:scale-105 transition duration-500"
-                                alt="{{ $program->program }}">
+                          onerror="this.onerror=null; this.src='{{ $defaultProgramImg }}';"
+                          class="w-full h-44 sm:h-52 object-cover transform group-hover:scale-105 transition duration-500"
+                         alt="{{ $program->program }}">
                             @if($program->available_slots == 0)
                                 <div class="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
                                     <span
