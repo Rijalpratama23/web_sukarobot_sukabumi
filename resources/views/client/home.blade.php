@@ -611,11 +611,6 @@
                                     class="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent lg:bg-gradient-to-r">
                                 </div>
                             </div>
-<<<<<<< HEAD
-                            <div class="p-8 lg:w-1/2 flex flex-col justify-center">
-                                <h3 class="text-3xl font-bold text-gray-900 mb-2">SRC (Sukabumi Robotic Competition)</h3>
-                                <p class="text-[#155DFC] font-semibold mb-6">Tingkat Nasional</p>
-=======
                             <div class="p-8 lg:w-1/2 flex flex-col justify-center items-start">
                                 <h3 class="text-3xl font-bold text-gray-900 mb-3">SRC (Sukabumi Robotic Competition)</h3>
                                 
@@ -626,8 +621,6 @@
                                         Tingkat Nasional
                                     </span>
                                 </div>
-
->>>>>>> origin/sv_Raja
                                 <p class="text-gray-600 mb-8 leading-relaxed text-lg">
                                     SRC merupakan kompetisi tahunan yang luar biasa. Karena kegiatan ini bukan hanya tentang
                                     teknologi dan robot, tetapi juga tentang kolaborasi, inovasi dan semangat untuk belajar.
