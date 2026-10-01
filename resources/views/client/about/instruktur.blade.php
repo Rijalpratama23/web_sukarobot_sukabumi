@@ -6,14 +6,14 @@
 
 @section('body')
 <!-- HERO SECTION -->
-<section class="py-16 bg-gradient-to-br from-blue-50 via-white to-orange-50 relative overflow-visible text-center pt-34">
+<section class="py-16 relative overflow-visible text-center pt-34" style="background: #E7E7E7;">
     <!-- Background Elements -->
     <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-orange-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-200/20 rounded-full blur-[80px] animate-pulse pointer-events-none"></div>
 
     <div class="relative z-10 max-w-4xl mx-auto px-6">
         <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Instruktur <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Profesional & Berpengalaman</span>
+            Instruktur <span class="text-transparent bg-clip-text bg-blue-600">Profesional</span> & <span class="text-transparent bg-clip-text bg-blue-600">Berpengalaman</span>
         </h1>
         <p class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
             Belajar langsung dari para ahli yang siap membimbingmu mencapai potensi terbaik.

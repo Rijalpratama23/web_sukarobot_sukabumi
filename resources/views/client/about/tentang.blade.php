@@ -5,7 +5,7 @@
 
 @section('body')
   <!-- KONTEN UTAMA -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-12 flex flex-col lg:flex-row gap-10 pt-34">
+  <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-12 flex flex-col lg:flex-row gap-10 pt-34" style="background: #E7E7E7;>
 
     <!-- SIDEBAR (desktop) -->
     <aside class="w-full lg:w-72 h-fit lg:sticky lg:top-32 bg-white border border-gray-100 shadow-lg rounded-2xl p-6 self-start">

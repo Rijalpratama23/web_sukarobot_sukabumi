@@ -49,10 +49,10 @@
         class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
         <img
           src="{{ $program->instructor_avatar }}"
-          alt="Instruktur" class="w-20 h-20 rounded-full border-4 border-blue-50 shadow-sm">
+          alt="Instruktur" class="w-20 h-20 rounded-full border-4 shadow-sm">
         <div>
           <h3 class="font-bold text-xl text-gray-900 mb-1">{{ $program->instructor_name ?? 'Sukarobot' }}</h3>
-          <p class="text-blue-600 font-medium mb-3">{{ $program->instructor_job ?? 'Instruktur Profesional' }}</p>
+          <p class="text-black font-medium mb-3">{{ $program->instructor_job ?? 'Instruktur Profesional' }}</p>
           <p class="text-gray-600 text-sm leading-relaxed">{{ $program->instructor_description ?? 'Berpengalaman di bidangnya dan siap membimbing Anda.' }}.</p>
         </div>
       </div>

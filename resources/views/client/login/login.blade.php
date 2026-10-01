@@ -7,7 +7,7 @@
 @section('body')
 
 <!-- Main Login Section -->
-<main class="flex items-center justify-center min-h-screen bg-white pt-24 pb-24">
+<main class="flex items-center justify-center min-h-screen" style="background: #E7E7E7;">
     <div id="login-card"
          class="flex flex-col md:flex-row w-full max-w-5xl mx-4 bg-white rounded-3xl shadow-2xl overflow-hidden opacity-0 scale-90 transition-all duration-700">
 
@@ -27,8 +27,8 @@
 
       <!-- Right Login Form -->
       <div class="w-full md:w-1/2 p-8 flex flex-col justify-center relative">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2 animate-fade">Selamat Datang 👋</h2>
-        <p class="text-gray-600 mb-6 animate-fade">Masuk untuk melanjutkan ke dashboard Anda.</p>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2 animate-fade">Selamat Datang di Subot!</h2>
+        <p class="text-gray-600 mb-6 animate-fade">Masuk dulu yuk sebelum lihat dashboard khusus punya kamu.</p>
 
         <!-- Error Messages -->
         @if ($errors->any())
@@ -81,8 +81,8 @@
         </div>
 
         <div class="mt-6 flex flex-row items-center justify-between text-sm text-gray-600">
-          <a href="{{ route('client.reset-password') }}" class="text-blue-600 transition hover:underline">Lupa Password?</a>
-          <a href="{{ url('/register') }}" class="text-blue-600 transition hover:underline">Buat Akun Baru</a>
+          <a href="{{ route('client.reset-password') }}" class="transition hover:underline" style="color:blue;">Lupa Password?</a>
+          <a href="{{ url('/register') }}" class="transition hover:underline" style="color:blue;">Buat Akun Baru</a>
         </div>
       </div>
     </div>

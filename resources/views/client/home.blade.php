@@ -35,7 +35,7 @@
     <!-- Script -->
 
     <!-- Hero Section -->
-    <section class="hero pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-orange-50 relative overflow-hidden">
+    <section class="hero pt-32 pb-20 relative overflow-hidden" style="background: #E7E7E7;">
         <!-- Background Elements -->
         <div
             class="absolute top-20 right-0 w-[500px] h-[500px] bg-orange-200/20 rounded-full blur-[100px] animate-pulse pointer-events-none">
@@ -47,12 +47,13 @@
         <div class="max-w-7xl mx-auto px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
             <!-- Left Content -->
             <div data-aos="fade-right" data-aos-duration="1000">
-                <div class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-6">
+                <div class="inline-block px-4 py-2 text-blue-700 rounded-full text-sm font-semibold mb-6" style="background: #d8dcdd;">
                     🚀 Platform Belajar Skill Masa Depan No.1 di Indonesia
                 </div>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
                     Belajar Skill <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Masa Depan</span>
+                        <span class="" style="display: inline-block; background-clip: text; -webkit-background-clip: text; color: transparent; background-image: linear-gradient(to right, #2563eb, #3b82f6); filter: drop-shadow(0 0 20px rgba(37, 99, 235, 0.45));"> Masa </span>
+                        <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]"> Depan </span>
                     dengan Mudah
                 </h1>
                 <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl">
@@ -61,7 +62,7 @@
                 </p>
                 <div class="flex flex-wrap gap-4">
                     <a href="#category"
-                        class="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300">
+                        class="px-8 py-4 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300" style="background: #2563eb;">
                         Jelajahi Program
                     </a>
                     <a href="#event"
@@ -192,7 +193,7 @@
 
 
     <!-- Category Navigator Section -->
-    <section id="category" class="py-16 bg-gray-50">
+    <section id="category" class="py-16" style="background: #e9ebec;">
         <div class="max-w-7xl mx-auto px-8 lg:px-12">
             <div class="text-center mb-12" data-aos="fade-up">
                 <h2 class="text-3xl font-bold text-gray-900">Jelajahi Kategori Program</h2>

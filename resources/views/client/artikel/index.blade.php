@@ -2,7 +2,7 @@
 @section('body')
 
 <!-- Hero -->
-<main class="max-w-7xl mx-auto px-6 pt-32 pb-12">
+<main class="max-w-7xl mx-auto px-6 pt-32 pb-12" style="background: #E7E7E7;">
 
   <!-- Section Hero -->
   <section class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
@@ -12,7 +12,7 @@
       </span>
       <h1 class="text-4xl md:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
         Wawasan Terkini <br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">
+        <span class="text-transparent bg-clip-text bg-blue-600">
           Dunia Robotika
         </span>
       </h1>

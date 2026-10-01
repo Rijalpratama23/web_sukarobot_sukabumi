@@ -1,4 +1,4 @@
-<nav id="main-navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent py-5">
+<nav id="main-navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent py-5" style="main-navbar { padding-top: 100px; }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <!-- Logo -->
@@ -11,40 +11,40 @@
             <!-- Desktop Nav -->
             <div class="nav hidden lg:flex items-center space-x-8">
                 <!-- Home -->
-                <a href="{{ url('/') }}" class="text-sm font-medium {{ request()->is('/') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Home</a>
+                <a href="{{ url('/') }}" class="text-sm font-medium {{ request()->is('/') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">Home</a>
 
-                <a href="{{ url('/program') }}" class="text-sm font-medium {{ request()->is('program*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Program</a>
-                
-                <a href="https://katalog.sukarobot.com/" class="text-sm font-medium {{ request()->is('katalog*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors" target="_blank">Katalog</a>
+                <a href="{{ url('/program') }}" class="text-sm font-medium {{ request()->is('program*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">Program</a>
+
+                <a href="https://katalog.sukarobot.com/" class="text-sm font-medium {{ request()->is('katalog*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors" target="_blank">Katalog</a>
 
                 <!-- Kompetisi Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center text-sm font-medium {{ request()->is('brc*') || request()->is('src*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
+                    <button class="flex items-center text-sm font-medium {{ request()->is('brc*') || request()->is('src*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors focus:outline-none cursor-pointer">
                         Kompetisi <span class="ml-1"></span>
                     </button>
                     <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium {{ request()->is('brc*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">BRC</a>
-                        <a href="https://src.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium {{ request()->is('src*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">SRC</a>
+                        <a href="https://brc.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium {{ request()->is('brc*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">BRC</a>
+                        <a href="https://src.sukarobot.com/" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm font-medium {{ request()->is('src*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">SRC</a>
                     </div>
                 </div>
 
                 <!-- Tentang Sukarobot Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center text-sm font-medium {{ request()->is('tentang*') || request()->is('instruktur*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors focus:outline-none cursor-pointer">
+                    <button class="flex items-center text-sm font-medium {{ request()->is('tentang*') || request()->is('instruktur*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors focus:outline-none cursor-pointer">
                         Tentang Sukarobot <span class="ml-1"></span>
                     </button>
                     <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="{{ url('/instruktur') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('instruktur*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Instruktur</a>
-                        <a href="{{ url('/tentang') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('tentang*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Tentang Kami</a>
+                        <a href="{{ url('/instruktur') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('instruktur*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">Instruktur</a>
+                        <a href="{{ url('/tentang') }}" class="block px-4 py-2 text-sm font-medium {{ request()->is('tentang*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">Tentang Kami</a>
                     </div>
                 </div>
 
                 <!-- Artikel -->
-                <a href="{{ url('/artikel') }}" class="text-sm font-medium {{ request()->is('artikel*') ? 'text-blue-600' : 'text-gray-600' }} hover:text-blue-600 transition-colors">Artikel</a>
+                <a href="{{ url('/artikel') }}" class="text-sm font-medium {{ request()->is('artikel*') ? 'text-black' : 'text-gray-600' }} hover:text-black transition-colors">Artikel</a>
 
                 <!-- Auth Buttons     -->
                 @guest
-                    <a href="{{ url('/login') }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30">
+                    <a href="{{ url('/login') }}" class="text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30" style="background: #2563eb;">
                         Masuk
                     </a>
                 @endguest

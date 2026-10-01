@@ -7,12 +7,12 @@
 @section('body')
 
 <!-- Reset Flow -->
-<main class="flex items-center justify-center min-h-screen bg-white pt-24 pb-24">
+<main class="flex items-center justify-center min-h-screen" style="background: #E7E7E7;">
     <div id="auth-card"
          class="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade mx-4">
 
       <!-- Ilustrasi: MUNCUL di mobile & di desktop -->
-      <div class="flex w-full md:w-1/2 bg-gradient-to-br from-orange-400 to-blue-600 items-center justify-center p-8 md:p-10">
+      <div class="flex w-full md:w-1/2 items-center justify-center p-8 md:p-10" style="background-color: #096882">
         <img src="{{ asset('assets/elearning/client/img/download__1_-removebg-preview.png') }}"
              alt="Illustration"
              class="w-48 sm:w-64 md:w-80 drop-shadow-xl rounded-xl">
@@ -32,7 +32,7 @@
                    class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none transition duration-300 hover:shadow-md active:scale-95">
             <p id="error-step-1" class="hidden text-red-500 text-sm"></p>
             <button type="submit" id="btn-step-1"
-                    class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="w-full py-2 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: #DD7325">
               <span id="btn-text-1">Cari</span>
               <span id="btn-loading-1" class="hidden">Mengirim...</span>
             </button>

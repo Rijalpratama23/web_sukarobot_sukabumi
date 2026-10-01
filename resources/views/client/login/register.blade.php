@@ -7,12 +7,12 @@
 
 @section('body')
 
-<main class="flex items-center justify-center min-h-screen bg-white pt-24 pb-24">
+<main class="flex items-center justify-center min-h-screen pt-24" style="background: #E7E7E7;">
     <div id="register-card"
          class="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade mx-4">
 
       <!-- Left mural -->
-      <div class="hidden md:flex w-1/2 bg-gradient-to-br from-orange-400 to-blue-600 items-center justify-center p-10">
+      <div class="hidden md:flex w-1/2 items-center justify-center p-10" style="background: #DD7325;">
         <img src="{{ asset('assets/elearning/client/img/download__1_-removebg-preview.png') }}"
              alt="Register Illustration"
              class="w-80 drop-shadow-xl rounded-xl">
@@ -83,7 +83,7 @@
 
           <!-- Button daftar -->
           <button type="submit" id="submit-btn"
-                  class="w-full py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer">
+                  class="w-full py-2 text-white rounded-xl font-semibold shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer" style="background-color: #1E5FF9">
             Buat Akun
           </button>
         </form>

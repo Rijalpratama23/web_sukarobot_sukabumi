@@ -40,7 +40,7 @@
     @endphp
 
     <!-- Top Navigation Menu -->
-    <div class="bg-white border-t border-gray-200 sticky top-0 z-30 mt-24">
+    <div class="border-t border-gray-200 sticky top-0 z-30 mt-24">
         <div class="container mx-auto px-6 relative group">
             <!-- Left Arrow -->
             <button id="nav-scroll-left"
@@ -87,7 +87,7 @@
             <p id="hero-description" class="text-gray-600 text-sm mb-6 sm:mb-8 max-w-2xl mx-auto">
                 {{ $heroContent[$currentCategory]['description'] ?? $heroContent['all']['description'] }}
             </p>
-            <div class="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-orange-500 mx-auto rounded-full"></div>
+            <div class="w-24 h-1.5 mx-auto rounded-full" style="background: #DD7325"></div>
         </div>
     </section>
 
