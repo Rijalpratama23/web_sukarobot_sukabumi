@@ -126,14 +126,18 @@
 
 				<!-- KANAN: Sticky Sidebar -->
 				<aside class="lg:col-span-4 xl:col-span-4 lg:mt-8 relative z-20">
-					<div class="kursus-card bg-white rounded-2xl shadow-xl shadow-[#155DFC]/10 p-6 lg:sticky lg:top-28">
-							@php
-								$detailImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
-									? asset($program->image)
-									: ($program->image ? asset('storage/' . $program->image) : asset('sukarobot.com/source/img/Sukarobot-logo.png'));
-							@endphp
+    			<div class="kursus-card bg-white rounded-2xl shadow-xl shadow-[#155DFC]/10 p-6 lg:sticky lg:top-28">
+        		@php
+            		$defaultDetailImg = asset('assets/elearning/client/img/ui-ux-static.jpg');
+            		$detailImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
+                	? asset($program->image)
+                	: ($program->image ? asset('storage/' . $program->image) : $defaultDetailImg);
+        @endphp
 
-							<img src="{{ $detailImageUrl }}" alt="Poster Kelas" class="w-full rounded-xl object-cover border border-slate-100">
+        <img src="{{ $detailImageUrl }}" 
+             onerror="this.onerror=null; this.src='{{ asset('assets/elearning/client/img/ui-ux-static.jpg') }}';" 
+             alt="Poster Kelas" 
+             class="w-full rounded-xl object-cover border border-slate-100">
 
 							@if(!$isPurchased)
 								<div class="mt-8 mb-4">

@@ -110,11 +110,14 @@
         <!-- Poster -->
         <div class="relative overflow-hidden rounded-xl mb-6 group">
           @php
+              $defaultDetailImg = asset('assets/elearning/client/img/pelatihan-robotika-static-2.jpg');
               $detailImageUrl = ($program->image && str_starts_with($program->image, 'images/'))
                   ? asset($program->image) 
-                  : ($program->image ? asset('storage/' . $program->image) : asset('sukarobot.com/source/img/Sukarobot-logo.png'));
+                  : ($program->image ? asset('storage/' . $program->image) : $defaultDetailImg);
           @endphp
-          <img src="{{ $detailImageUrl }}" alt="Poster Kelas"
+          <img src="{{ $detailImageUrl }}" 
+            onerror="this.onerror=null; this.src='{{ asset('assets/elearning/client/img/pelatihan-robotika-static-2.jpg') }}';"
+            alt="Poster Kelas"
             class="w-full object-cover transform group-hover:scale-105 transition duration-500">
         </div>
 

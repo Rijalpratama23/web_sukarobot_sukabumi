@@ -295,3 +295,27 @@ body.overflow-hidden {
     margin: 0 48px;
   }
 }
+
+/* --- Review Section ---*/
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 12px)); }
+}
+
+.animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: scroll 35s linear infinite;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+
+}
+@media (hover: hover) and (pointer: fine) {
+    .animate-marquee:hover {
+        animation-play-state: paused;
+    }
+  }

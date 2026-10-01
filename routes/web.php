@@ -357,4 +357,4 @@ Route::prefix('instructor')->name('instructor.')->middleware([\App\Http\Middlewa
     Route::get('quizzes/{id}/edit', [\App\Http\Controllers\Instructor\QuizController::class, 'edit'])->name('quizzes.edit');
     Route::put('quizzes/{id}', [\App\Http\Controllers\Instructor\QuizController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [\App\Http\Controllers\Instructor\QuizController::class, 'destroy'])->name('quizzes.destroy');
-});
+});  
